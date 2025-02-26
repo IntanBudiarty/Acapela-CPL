@@ -91,6 +91,21 @@ class RumusanAkhirMkController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    public function edit($id)
+    {
+        // Mengambil data RumusanAkhirMk beserta relasi Mata Kuliah, CPL, dan CPMK yang terkait
+        $rumusanAkhirMk = RumusanAkhirMk::with(['mataKuliah', 'cpl', 'cpmk'])->findOrFail($id);
+
+        // Mengambil semua Mata Kuliah, CPL, dan CPMK untuk pilihan di form
+        $mataKuliahs = MataKuliah::all();
+        $cpls = Cpl::all();
+        $cpmks = Cpmk::all();
+
+        // Mengirim data ke view untuk ditampilkan di halaman edit
+        return view('rumusanAkhirMk.edit', compact('rumusanAkhirMk', 'mataKuliahs', 'cpls', 'cpmks'));
+    }
+
     // public function edit($id)
     // {
     //     // Mengambil data RumusanAkhirMk beserta relasi Mata Kuliah, CPL, dan CPMK yang terkait
@@ -104,6 +119,7 @@ class RumusanAkhirMkController extends Controller
     //     // Mengirim data ke view untuk ditampilkan di halaman edit
     //     return view('rumusanAkhirMk.edit', compact('rumusanAkhirMk', 'mataKuliahs', 'cpls', 'cpmks'));
     // }
+
 
 
     public function update(Request $request, $id)
@@ -138,6 +154,7 @@ class RumusanAkhirMkController extends Controller
         // Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('rumusanAkhirMk.index')->with('success', 'Data berhasil diperbarui');
     }
+
     public function destroy($id)
     {
         try {

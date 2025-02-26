@@ -14,7 +14,12 @@ class RumusanAkhirMk extends Model
 
     protected $table = 'rumusan_akhir_mk';
     protected $fillable = [
-        'mata_kuliah_id', 'nama_mk', 'kd_cpl', 'kd_cpmk', 'skor_maksimal', 'total_skor'
+        'mata_kuliah_id',
+        'nama_mk',
+        'kd_cpl',
+        'kd_cpmk',
+        'skor_maksimal',
+        'total_skor'
     ];
 
     public function mataKuliah()
@@ -22,16 +27,17 @@ class RumusanAkhirMk extends Model
         return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
     }
 
+
     public function cpl()
     {
-        return $this->belongsToMany(Cpl::class, 'rumusan_akhir_mk_id', 'mata_kuliah_cpl', 'mata_kuliah_id', 'cpl_id')
-                    ->withPivot('kode_cpl'); // Pastikan pivot kolom ini termasuk
+        return $this->belongsToMany(Cpl::class, 'rumusan_akhir_cpl', 'rumusan_akhir_mk_id', 'kd_cpl')
+            ->withPivot('kd_cpl');
     }
 
     public function cpmk()
     {
         return $this->belongsToMany(Cpmk::class, 'mata_kuliah_cpmk', 'mata_kuliah_id', 'cpmk_id')
-                    ->withPivot('kode_cpmk'); // Pastikan pivot kolom ini termasuk
+            ->withPivot('kode_cpmk'); // Pastikan pivot kolom ini termasuk
     }
     public function rumusanAkhirCpl()
     {
@@ -41,5 +47,4 @@ class RumusanAkhirMk extends Model
     {
         return $this->hasMany(Nilai::class, 'rumusan_akhir_mk_id');
     }
-
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Validator;
 use App\Models\Mahasiswa;
 
@@ -89,7 +90,7 @@ class MahasiswaController extends Controller
         $mhs = Mahasiswa::firstWhere('id', $id);
 
         $rules = [
-            'nim' => 'required|string|unique:mahasiswas,nim,'.$mhs->id,
+            'nim' => 'required|string|unique:mahasiswas,nim,' . $mhs->id,
             'nama' => 'required|string',
             'angkatan' => 'required|integer',
         ];
@@ -144,7 +145,7 @@ class MahasiswaController extends Controller
         $mahasiswa->mataKuliahs()->detach($mataKuliah->id);
 
         return redirect()->route('mahasiswa.detail', $mahasiswa->id)
-                        ->with('success', 'Mata Kuliah berhasil dihapus!');
+            ->with('success', 'Mata Kuliah berhasil dihapus!');
     }
 
     public function showDetail($id)
@@ -215,6 +216,4 @@ class MahasiswaController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
-
 }
-

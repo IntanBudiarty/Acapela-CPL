@@ -46,7 +46,7 @@ Route::post('/login-admin', [AuthController::class, 'loginAdmin'])->name('login_
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => ['role:admin']], function () {
         // Admin
- 
+
         Route::get('admin', [AdminController::class, 'index'])->name('admin');
         Route::get('admin/tambah/', [AdminController::class, 'tambahindex'])->name('tambahadmin');
         Route::post('admin/tambah/post', [AdminController::class, 'tambah'])->name('form-tambah-admin');
@@ -61,26 +61,26 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('dosen/edit/{id}', [DosenController::class, 'editindex']);
         Route::post('dosen/edit/{id}/post', [DosenController::class, 'edit']);
         // Mahasiswa
-    Route::prefix('mhs')->group(function () {
-        Route::get('/', [MahasiswaController::class, 'index'])->name('mhs');
-        Route::get('tambah', [MahasiswaController::class, 'tambahindex'])->name('tambahmhs');
-        Route::post('tambah/post', [MahasiswaController::class, 'tambah'])->name('form-tambah-mahasiswa');
-        Route::get('hapus/{id}', [MahasiswaController::class, 'hapus'])->name('mahasiswa.hapus');
-        Route::get('edit/{id}', [MahasiswaController::class, 'editindex'])->name('mahasiswa.edit');
-        Route::post('edit/{id}/post', [MahasiswaController::class, 'edit'])->name('mahasiswa.edit.post');
-        Route::get('{id}', [MahasiswaController::class, 'show'])->name('mahasiswa.show');
-        Route::get('{id}/matakuliah', [MahasiswaController::class, 'showMataKuliah'])->name('mahasiswa.mataKuliah');
-        Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])->name('mahasiswa.import');
-        Route::get('mhs/{id}/matakuliah', [MahasiswaController::class, 'detail'])->name('mahasiswa.detail');
-        Route::post('mhs/{id}/matakuliah/tambah', [MahasiswaController::class, 'addMataKuliah'])->name('mahasiswa.mataKuliah.tambah');
-        Route::delete('/mhs/{mahasiswa}/mata-kuliah/{mataKuliah}', [MahasiswaController::class, 'removeMataKuliah'])->name('mahasiswa.removeMataKuliah');
-    });
+        Route::prefix('mhs')->group(function () {
+            Route::get('/', [MahasiswaController::class, 'index'])->name('mhs');
+            Route::get('tambah', [MahasiswaController::class, 'tambahindex'])->name('tambahmhs');
+            Route::post('tambah/post', [MahasiswaController::class, 'tambah'])->name('form-tambah-mahasiswa');
+            Route::get('hapus/{id}', [MahasiswaController::class, 'hapus'])->name('mahasiswa.hapus');
+            Route::get('edit/{id}', [MahasiswaController::class, 'editindex'])->name('mahasiswa.edit');
+            Route::post('edit/{id}/post', [MahasiswaController::class, 'edit'])->name('mahasiswa.edit.post');
+            Route::get('{id}', [MahasiswaController::class, 'show'])->name('mahasiswa.show');
+            Route::get('{id}/matakuliah', [MahasiswaController::class, 'showMataKuliah'])->name('mahasiswa.mataKuliah');
+            Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])->name('mahasiswa.import');
+            Route::get('mhs/{id}/matakuliah', [MahasiswaController::class, 'detail'])->name('mahasiswa.detail');
+            Route::post('mhs/{id}/matakuliah/tambah', [MahasiswaController::class, 'addMataKuliah'])->name('mahasiswa.mataKuliah.tambah');
+            Route::delete('/mhs/{mahasiswa}/mata-kuliah/{mataKuliah}', [MahasiswaController::class, 'removeMataKuliah'])->name('mahasiswa.removeMataKuliah');
+        });
 
         // Import and Mata Kuliah
         Route::get('/mahasiswa/{id}/mata-kuliah', [MahasiswaController::class, 'showMataKuliah'])->name('mahasiswa.mata-kuliah');
         Route::post('/mahasiswa/{id}/add-mata-kuliah', [MahasiswaController::class, 'addMataKuliah'])->name('mahasiswa.addMataKuliah');
 
-        
+
         // Tahun Ajaran
         Route::get('ta', [TahunAjaranController::class, 'index'])->name('ta');
         Route::get('ta/tambah/', [TahunAjaranController::class, 'tambahindex'])->name('tambahta');
@@ -134,6 +134,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('rumusanAkhirMk', [RumusanAkhirMkController::class, 'index'])->name('rumusanAkhirMk.index');
         Route::get('rumusanAkhirMk/tambah', [RumusanAkhirMkController::class, 'create'])->name('tambah-rumusan_akhir_mk');
         Route::post('rumusanAkhirMk/tambah', [RumusanAkhirMkController::class, 'store'])->name('rumusanAkhirMk.store');
+        Route::get('rumusanAkhirMk/{id}/edit', [RumusanAkhirMkController::class, 'edit'])->name('rumusanAkhirMk.edit');
         Route::get('rumusanAkhirMk/hapus/{id}', [RumusanAkhirMkController::class, 'hapus']);
         // Route::get('rumusanAkhirMk/{id}/edit', [RumusanAkhirMkController::class, 'edit'])->name('rumusanAkhirMk.edit');
         Route::put('rumusanAkhirMk/{id}', [RumusanAkhirMkController::class, 'update'])->name('rumusanAkhirMk.update');
@@ -153,12 +154,12 @@ Route::group(['middleware' => 'auth'], function () {
         // Route::get('/rumusan-akhir-cpl', [RumusanAkhirCpl::class, 'index'])->name('bcpl.index');
     });
     Route::group(['middleware' => ['role:admin|dosen']], function () {
-        
+
         // Ketercapaian CPMK 
         Route::get('ketercapaian', [KetercapaianController::class, 'index']);
-        Route::get('ketercapaian/{id}', [KetercapaianController::class, 'show'])->name('ketercapaian.show');        
+        Route::get('ketercapaian/{id}', [KetercapaianController::class, 'show'])->name('ketercapaian.show');
         // Route::get('ketercapaian', [KetercapaianController::class, 'index'])->name('ketercapaian');
-        
+
         // Route::get('ketercapaian/cari', [KetercapaianController::class, 'cari'])->name('ketercapaiancari');
         // Route::get('ketercapaian-cetak', [KetercapaianController::class, 'downloadPDF'])->name('ketercapaian-cetak');
         // // Ketercapaian CPL
@@ -173,7 +174,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('dpna/cari', [DpnaController::class, 'cari'])->name('dpnacari');
         Route::get('dpna-cetak', [DpnaController::class, 'downloadPDF'])->name('dpna-cetak');
         // Nilai
-        
+
         Route::get('/nilai', [NilaiController::class, 'index'])->name('nilai.index');
         Route::post('nilai-post', [NilaiController::class, 'store']);
         Route::get('/nilai/{mataKuliah}', [NilaiController::class, 'show'])->name('nilai.show');
