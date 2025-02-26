@@ -70,27 +70,25 @@
             </thead>
             <tbody>
                 @php $no = 1; @endphp
-                @foreach ($groupedData as $kd_cpl => $data)
-                    @foreach ($data['cpmks'] as $index => $cpmk)
+                @foreach ($groupedData as $kd_cpl => $group)
+                    @php $rowCount = $group['records']->count(); @endphp
+                    @foreach ($group['records'] as $index => $data)
                         <tr>
+                            <td>{{ $no++ }}</td>
+                            <td>{{ $kd_cpl }}</td>
+                            <td>{{ $data->rumusanAkhirMk->mataKuliah->kode ?? 'Data Tidak Tersedia' }}</td>
+                            <td>{{ $data->rumusanAkhirMk->mataKuliah->nama ?? 'Data Tidak Tersedia' }}</td>
+                            <td>{{ $data->cpmk }}</td>
+                            <td>{{ $data->skor_maksimal }}</td>
                             @if ($index === 0)
-                                <!-- Hanya tampilkan data CPL di baris pertama -->
-                                <td rowspan="{{ count($data['cpmks']) }}">{{ $no++ }}</td>
-                                <td rowspan="{{ count($data['cpmks']) }}">{{ $kd_cpl }}</td>
-                                <td rowspan="{{ count($data['cpmks']) }}">{{ $data['kode_mk'] }}</td>
-                                <td rowspan="{{ count($data['cpmks']) }}">{{ $data['mata_kuliah'] }}</td>
-                            @endif
-                            <td>{{ $cpmk['kode_cpmk'] }}</td>
-                            <td>{{ $cpmk['skor_maksimal'] }}</td>
-                            @if ($index === 0)
-                                <!-- Total skor hanya ditampilkan di baris pertama CPL -->
-                                <td rowspan="{{ count($data['cpmks']) }}">{{ $data['total_skor'] }}</td>
+                                <td rowspan="{{ $rowCount }}">{{ $group['total_skor'] }}</td>
                             @endif
                         </tr>
                     @endforeach
                 @endforeach
             </tbody>
-    </table>
+        </table>
+        
 </div>
 </div>
 <!-- END Page Content -->

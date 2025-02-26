@@ -12,27 +12,22 @@ use Illuminate\Http\Request;
 class RumusaAkhirCplController extends Controller
 {
     public function index()
-{
-    // Ambil data dari rumusan_akhir_cpl dengan relasi
-    $rumusanAkhirCpl = RumusanAkhirCpl::with(['mataKuliah', 'rumusanAkhirMk'])->get();
+    {
+        // Ambil data beserta relasi (rumusanAkhirMk -> mataKuliah)
+        $rumusanAkhirCpl = RumusanAkhirCpl::with(['rumusanAkhirMk.mataKuliah'])->get();
 
-    // Kelompokkan data berdasarkan kd_cpl
-    $groupedData = $rumusanAkhirCpl->groupBy('kd_cpl')->map(function ($items, $kd_cpl) {
-        return [
-            'kode_mk' => $items->first()->rumusanAkhirMk->mataKuliah->kode ?? 'Data Tidak Tersedia',
-            'mata_kuliah' => $items->first()->rumusanAkhirMk->mataKuliah->nama ?? 'Data Tidak Tersedia',
-            'cpmks' => $items->map(function ($item) {
-                return [
-                    'kode_cpmk' => $item->cpmk,
-                    'skor_maksimal' => $item->skor_maksimal,
-                ];
-            })->toArray(),
-            'total_skor' => $items->sum('skor_maksimal'),
-        ];
-    });
+        // Kelompokkan data berdasarkan kd_cpl dan hitung total skor untuk tiap grup
+        $groupedData = $rumusanAkhirCpl->groupBy('kd_cpl')->map(function ($group) {
+            return [
+                'total_skor' => $group->sum('skor_maksimal'),
+                'records'    => $group, // koleksi data tiap baris (per cpmk)
+            ];
+        });
 
-    return view('rumusanAkhirCpl.index', compact('groupedData'));
-}
+        return view('rumusanAkhirCpl.index', compact('groupedData'));
+    }
+
+
 
 
     public function importDataFromRumusanAkhirMk()
@@ -40,57 +35,55 @@ class RumusaAkhirCplController extends Controller
         try {
             // Ambil semua data dari rumusan_akhir_mk
             $rumusanAkhirMkData = RumusanAkhirMk::all();
-    
+
             if ($rumusanAkhirMkData->isEmpty()) {
                 return back()->with('error', 'Data rumusan_akhir_mk kosong!');
             }
-    
+
             $dataToInsert = []; // Array untuk batch insert
-    
+
             foreach ($rumusanAkhirMkData as $data) {
                 // Pastikan data valid sebelum dipindahkan
                 if (!isset($data->kd_cpl) || !isset($data->kd_cpmk)) {
                     continue; // Lewati data yang tidak valid
                 }
-    
+
                 // Pecah data kd_cpl yang dipisahkan koma
                 $kdCplArray = explode(',', $data->kd_cpl);
-                
+
                 // Proses setiap kode CPL
-                foreach ($kdCplArray as $index => $kdCpl) {
-                    // Trim dan pastikan tidak kosong
+                foreach ($kdCplArray as $kdCpl) {
+                    // Trim spasi agar bersih
                     $kdCpl = trim($kdCpl);
-    
+
                     if (!empty($kdCpl)) {
-                        // Tentukan kode CPL baru (CPL01, CPL02, dst.)
-                        $nextCplCode = 'CPL' . str_pad($index + 1, 2, '0', STR_PAD_LEFT);
-    
-                        // Menyiapkan data untuk dimasukkan ke rumusan_akhir_cpl
+                        // Gunakan kdCpl apa adanya, jangan digenerate ulang
                         $dataToInsert[] = [
-                            'kd_cpl' => $nextCplCode,
-                            'mata_kuliah_id' => $data->mata_kuliah_id,
-                            'nama_mk' => $data->nama_mk,
-                            'cpmk' => $data->kd_cpmk,
-                            'skor_maksimal' => $data->skor_maksimal,
-                            'total_skor' => $data->total_skor,
-                            'created_at' => now(),
-                            'updated_at' => now(),
+                            'kd_cpl'            => $kdCpl,
+                            'mata_kuliah_id'    => $data->mata_kuliah_id,
+                            'nama_mk'           => $data->nama_mk,
+                            'cpmk'              => $data->kd_cpmk,
+                            'skor_maksimal'     => $data->skor_maksimal,
+                            'total_skor'        => $data->total_skor,
+                            'created_at'        => now(),
+                            'updated_at'        => now(),
                             'rumusan_akhir_mk_id' => $data->id,
                         ];
                     }
                 }
             }
-    
+
             // Jika ada data yang valid, insert ke rumusan_akhir_cpl
             if (!empty($dataToInsert)) {
                 RumusanAkhirCpl::insert($dataToInsert);
             }
-    
+
             return redirect()->route('rumusanAkhirCpl.index')->with('success', 'Data berhasil dipindahkan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function store(Request $request)
     {
@@ -115,7 +108,7 @@ class RumusaAkhirCplController extends Controller
         try {
             // Menyimpan data Rumusan Akhir MK
             $rumusanAkhirMk = RumusanAkhirMk::create($request->all());
-        
+
 
             // Jika Rumusan Akhir MK berhasil disimpan, lanjutkan ke rumusan_akhir_cpl
             $dataToInsert = [];
@@ -123,7 +116,7 @@ class RumusaAkhirCplController extends Controller
             // Loop untuk menyimpan data berdasarkan CPMK yang dipilih
             foreach ($request->kd_cpmk as $cpmkKode) {
                 // Ambil array kode cpl yang dipilih
-                $kdCplArray = $request->kd_cpl;  
+                $kdCplArray = $request->kd_cpl;
 
                 // Temukan data CPMK berdasarkan kode
                 $cpmk = Cpmk::where('kode_cpmk', $cpmkKode)->first();
