@@ -1,0 +1,91 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The Laravel Framework.",
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.3|^8.0",
+        "ext-json": "*",
+        "elibyy/tcpdf-laravel": "^8.1",
+        "fideloper/proxy": "^4.4.1",
+        "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.3.0",
+        "laravel/framework": "^v8.62.0",
+        "laravel/sanctum": "^2.11",
+        "laravel/tinker": "^v2.6.2",
+        "maatwebsite/excel": "^3.1",
+        "spatie/laravel-permission": "^5.1",
+        "yajra/laravel-datatables-oracle": "^9.18"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.6",
+        "barryvdh/laravel-ide-helper": "^2.10",
+        "facade/ignition": "^2.13.1",
+        "fakerphp/faker": "^v1.16.0",
+        "laravel/sail": "^v1.10.2",
+        "mockery/mockery": "^1.4.4",
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "nunomaduro/collision": "^v5.10.0",
+        "orangehill/iseed": "^3.0",
+        "phpunit/phpunit": "^9.5.10",
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "@php artisan vendor:publish --tag=laravel-assets --ansi",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ],
+        "sniff": [
+            "./vendor/bin/php-cs-fixer fix -vvv --dry-run --show-progress=dots"
+        ],
+        "lint": [
+            "./vendor/bin/php-cs-fixer fix -vvv --show-progress=dots"
+        ],
+        "ide-helper:generate": [
+            "@php artisan ide-helper:generate"
+        ],
+        "ide-helper:models": [
+            "@php artisan ide-helper:models"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
