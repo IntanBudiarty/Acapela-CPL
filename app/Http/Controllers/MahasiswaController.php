@@ -119,21 +119,28 @@ class MahasiswaController extends Controller
 
     public function addMataKuliah(Request $request, $mahasiswaId)
     {
-        $mahasiswa = Mahasiswa::with('mataKuliahs')->find($mahasiswaId);
+        $mahasiswa = Mahasiswa::with('mataKuliahs')->findOrFail($mahasiswaId);
+        $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
 
-        // Hitung total SKS yang sudah diambil mahasiswa
-        $totalSKS = $mahasiswa->mataKuliahs->sum('sks');
+        // Ambil semua mahasiswa dengan angkatan yang sama
+        $mahasiswaLain = Mahasiswa::where('angkatan', $mahasiswa->angkatan)->get();
 
-        // Cek jika penambahan SKS membuat totalnya lebih dari 24
-        $mataKuliah = MataKuliah::find($request->mata_kuliah_id);
-        if ($totalSKS + $mataKuliah->sks > 24) {
-            return redirect()->back()->with('error', 'Total SKS tidak boleh lebih dari 24.');
+        foreach ($mahasiswaLain as $mhs) {
+            // Hitung total SKS yang sudah diambil mahasiswa ini
+            $totalSKS = $mhs->mataKuliahs->sum('sks');
+
+            // Cek jika penambahan SKS membuat totalnya lebih dari 24
+            if ($totalSKS + $mataKuliah->sks > 24) {
+                return redirect()->back()->with('error', "Total SKS untuk mahasiswa dengan NIM $mhs->nim melebihi batas 24.");
+            }
+
+            // Pastikan mata kuliah belum terdaftar untuk mahasiswa ini
+            if (!$mhs->mataKuliahs()->where('mata_kuliah_id', $mataKuliah->id)->exists()) {
+                $mhs->mataKuliahs()->attach($mataKuliah->id);
+            }
         }
 
-        // Jika validasi lolos, tambahkan mata kuliah
-        $mahasiswa->mataKuliahs()->attach($mataKuliah->id);
-
-        return redirect()->route('mahasiswa.detail', $mahasiswaId)->with('success', 'Mata kuliah berhasil ditambahkan.');
+        return redirect()->route('mahasiswa.detail', $mahasiswaId)->with('success', 'Mata kuliah berhasil ditambahkan ke semua mahasiswa angkatan ' . $mahasiswa->angkatan);
     }
 
     public function removeMataKuliah($mahasiswaId, $mataKuliahId)
