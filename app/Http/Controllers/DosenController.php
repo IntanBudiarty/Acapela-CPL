@@ -76,6 +76,7 @@ class DosenController extends Controller
 
         $user = new User;
         $user->username = $request->input('username');
+        $user->nip = $request->input('nip');
         $user->status = 'Dosen';
         $user->password = bcrypt($request->input('password'));
         $user->save();
@@ -95,9 +96,9 @@ class DosenController extends Controller
         $data = DosenAdmin::with('user')->firstWhere('id', $id);
 
         $rules = [
-            'nip' => 'required|integer|unique:dosen_admins,nip,'.$data->id,
+            'nip' => 'required|integer|unique:dosen_admins,nip,' . $data->id,
             'nama' => 'required|string',
-            'username' => 'required|string|unique:users,username,'.$data->user->id,
+            'username' => 'required|string|unique:users,username,' . $data->user->id,
             'password' => 'required|string',
         ];
 
@@ -127,5 +128,4 @@ class DosenController extends Controller
 
         return redirect()->route('dosen');
     }
-    
 }
