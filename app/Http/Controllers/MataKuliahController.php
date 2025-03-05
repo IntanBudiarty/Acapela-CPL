@@ -32,19 +32,27 @@ class MataKuliahController extends Controller
     }
     public function index()
     {
+        // Ambil data user yang sedang login
+        $user = auth()->user(); 
         
-        // Nilai tetap
-        $judul = 'Kelola Mata Kuliah';
-        $parent = 'Mata Kuliah';
-
-        $tampil = MataKuliah::get();
+        // Cek apakah user adalah dosen
+        if ($user->role == 'dosen') {
+            // Ambil hanya mata kuliah yang diampu oleh dosen yang sedang login
+            $tampil = MataKuliah::where('dosen_pengampu_1', $user->id)
+                ->orWhere('dosen_pengampu_2', $user->id)
+                ->get();
+        } else {
+            // Jika admin, tampilkan semua mata kuliah
+            $tampil = MataKuliah::all();
+        }
 
         return view('matakuliah.index', [
             'matakuliah' => $tampil,
-            'judul' => $judul,
-            'parent' => $parent,
+            'judul' => 'Kelola Mata Kuliah',
+            'parent' => 'Mata Kuliah',
         ]);
     }
+
 
     public function tambahindex()
 {
