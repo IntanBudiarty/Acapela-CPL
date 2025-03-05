@@ -97,53 +97,60 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $no = 1;
-                        @endphp
-                        @foreach ($rumusanAkhirMkGrouped as $kd_mk => $group)
-                        @foreach($group as $key => $rumusan)
-                            @php
-                                $cpls = explode(',', $rumusan->kd_cpl);
-                                $cpmks = explode(',', $rumusan->kd_cpmk);
-                                $skorMaksimals = explode(',', $rumusan->skor_maksimal);
-                                $rowspan = count($cpmks);
+                        @php $no = 1; @endphp
+                        @foreach ($rumusanAkhirMkGrouped as $mataKuliahId => $group)
+                            @php 
+                                $firstItem = $group->first(); // Ambil elemen pertama dari group
+                                $rowspan = $group->count(); 
+                                $totalSkor = $group->sum('skor_maksimal'); // Hitung total skor dari semua CPMK
                             @endphp
-                            
-                            @foreach ($cpmks as $index => $cpmk)
-                                <tr>
-                                    @if($index === 0)
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $no++ }}</td>
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $rumusan->mataKuliah->kode ?? 'N/A' }}</td>
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $rumusan->mataKuliah->nama ?? 'N/A' }}</td>
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ implode(', ', $cpls) }}</td>
+                            <tr>
+                                <!-- No, Kode MK, Mata Kuliah, CPL hanya ditampilkan di baris pertama -->
+                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $no++ }}</td>
+                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $firstItem->mataKuliah->kode ?? 'N/A' }}</td>
+                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $firstItem->mataKuliah->nama ?? 'N/A' }}</td>
+                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $firstItem->kd_cpl }}</td>
+                    
+                                <!-- CPMK pertama -->
+                                @foreach ($group as $index => $rumusan)
+                                    @if ($index == 0)
+                                        <td class="text-center">{{ $rumusan->kd_cpmk }}</td>
+                                        <td class="text-center">{{ $rumusan->skor_maksimal }}</td>
                                     @endif
-
-                                    <!-- Tampilkan CPMK dan Skor Maksimal sesuai dengan masing-masing CPMK -->
-                                    <td class="text-center">{{ $cpmk }}</td>
-                                    <td class="text-center">{{ $skorMaksimals[$index] ?? '0' }}</td> <!-- Perbaikan di sini -->
-
-                                    @if ($index === 0)
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ array_sum($skorMaksimals) }}</td>
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">
-                                            <div class="btn-group">
-                                                <a href="{{ route('rumusanAkhirMk.edit', $rumusan->id) }}" class="btn btn-secondary btn-sm edit" title="Edit">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                </a>
-                                                <form action="{{ route('rumusan_akhir_mk.destroy', $rumusan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-secondary btn-sm" title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>                                                  
-                                            </div>
-                                        </td>
-                                    @endif
-                                </tr>
+                                @endforeach
+                    
+                                <!-- Total Skor hanya di baris pertama -->
+                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $totalSkor }}</td>
+                    
+                                <!-- Aksi hanya di baris pertama -->
+                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">
+                                    <div class="btn-group">
+                                        <a href="{{ route('rumusanAkhirMk.edit', $rumusan->id) }}" class="btn btn-secondary btn-sm edit" title="Edit">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <form action="{{ route('rumusan_akhir_mk.destroy', $rumusan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-secondary btn-sm" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>                                                  
+                                    </div>
+                                </td>
+                            </tr>
+                    
+                            <!-- CPMK lainnya -->
+                            @foreach ($group as $index => $rumusan)
+                                @if ($index > 0)
+                                    <tr>
+                                        <td class="text-center">{{ $rumusan->kd_cpmk }}</td>
+                                        <td class="text-center">{{ $rumusan->skor_maksimal }}</td>
+                                    </tr>
+                                @endif
                             @endforeach
                         @endforeach
-                        @endforeach
                     </tbody>
+                    
                 </table>
             </div>
         </div>

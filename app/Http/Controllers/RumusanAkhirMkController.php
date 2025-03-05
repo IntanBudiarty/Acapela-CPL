@@ -62,26 +62,27 @@ class RumusanAkhirMkController extends Controller
 
         try {
             // Simpan data Rumusan Akhir MK
-            $rumusanAkhirMk = RumusanAkhirMk::create([
-                'mata_kuliah_id' => $request->mata_kuliah_id,
-                'nama_mk' => $mataKuliah->nama,
-                'kd_cpl' => implode(',', $request->kd_cpl),
-                'kd_cpmk' => implode(',', $request->kd_cpmk),
-                'skor_maksimal' => array_sum($request->skor_maksimal),
-                'total_skor' => array_sum($request->skor_maksimal),
-            ]);
+            foreach ($request->kd_cpmk as $cpmkKode) {
+                // Simpan ke tabel RumusanAkhirMk
+                $rumusanAkhirMk = RumusanAkhirMk::create([
+                    'mata_kuliah_id' => $request->mata_kuliah_id,
+                    'nama_mk' => $mataKuliah->nama,
+                    'kd_cpl' => implode(',', $request->kd_cpl), // CPL tetap bisa lebih dari satu
+                    'kd_cpmk' => $cpmkKode, // Simpan satu CPMK per baris
+                    'skor_maksimal' => $request->skor_maksimal[$cpmkKode] ?? 0, // Skor sesuai CPMK
+                    'total_skor' => $request->skor_maksimal[$cpmkKode] ?? 0, // Tidak menjumlahkan, tetap individual
+                ]);
 
-            // Simpan data ke Rumusan Akhir CPL
-            foreach ($request->kd_cpl as $cplKode) {
-                foreach ($request->kd_cpmk as $cpmkKode) {
+                // Setelah RumusanAkhirMk berhasil dibuat, langsung simpan ke RumusanAkhirCpl
+                foreach ($request->kd_cpl as $cplKode) {
                     RumusanAkhirCpl::create([
-                        'rumusan_akhir_mk_id' => $rumusanAkhirMk->id,
+                        'rumusan_akhir_mk_id' => $rumusanAkhirMk->id, // ID dari MK yang baru saja dibuat
                         'kd_cpl' => $cplKode,
                         'mata_kuliah_id' => $request->mata_kuliah_id,
                         'nama_mk' => $mataKuliah->nama,
-                        'cpmk' => $cpmkKode,
-                        'skor_maksimal' => $request->skor_maksimal[$cpmkKode] ?? 0,  // Pastikan nilai diambil sesuai CPMK
-                        'total_skor' => array_sum($request->skor_maksimal),
+                        'cpmk' => $cpmkKode, // Simpan per CPMK
+                        'skor_maksimal' => $request->skor_maksimal[$cpmkKode] ?? 0, // Ambil skor dari MK
+                        'total_skor' => $request->skor_maksimal[$cpmkKode] ?? 0, // Total tetap individual
                     ]);
                 }
             }

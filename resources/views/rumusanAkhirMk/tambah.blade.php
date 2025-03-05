@@ -137,8 +137,8 @@
                                 var selectedCpmks = $(this).val();
                                 var skorInputsContainer = $('#skor-inputs-container');
                                 skorInputsContainer.empty(); // Hapus input sebelumnya
-                        
-                                // Loop melalui CPMK yang dipilih dan tambahkan input untuk skor maksimal
+
+                                // Loop CPMK yang dipilih dan tambahkan input skor
                                 selectedCpmks.forEach(function(cpmk) {
                                     skorInputsContainer.append(`
                                         <div class="form-group">
