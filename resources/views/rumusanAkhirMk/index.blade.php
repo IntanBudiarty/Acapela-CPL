@@ -120,7 +120,7 @@
                                         <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $group->sum('skor_maksimal') }}</td>
                                         <td rowspan="{{ $rowspan }}" class="text-center align-middle" style="width: 100px">
                                             <div class="btn-group">
-                                                <a href="{{ route('rumusanAkhirMk.edit', $rumusan->id) }}" class="btn btn-secondary btn-sm edit me-2" title="Edit">
+                                                <a href="{{ route('rumusanAkhirMk.edit', $rumusan->id) }}" class="btn btn-secondary btn-sm edit" title="Edit">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </a>
                                                 <form action="{{ route('rumusan_akhir_mk.destroy', $rumusan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
@@ -136,7 +136,7 @@
                                 </tr>
                             @endforeach
                         @endforeach
-                    </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
