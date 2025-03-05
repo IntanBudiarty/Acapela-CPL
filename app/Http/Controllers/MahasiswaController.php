@@ -14,19 +14,13 @@ class MahasiswaController extends Controller
 {
     public function index()
     {
-        // Nilai tetap
         $judul = 'Kelola Mahasiswa';
         $parent = 'Mahasiswa';
 
-        $tampil = Mahasiswa::get();
+        // Mengelompokkan mahasiswa berdasarkan angkatan
+        $mahasiswa = Mahasiswa::orderBy('angkatan', 'desc')->get()->groupBy('angkatan');
 
-        return view('mahasiswa.index', [
-            'mahasiswa' => $tampil,
-            'judul' => $judul,
-            'parent' => $parent,
-        ]);
-        $mahasiswas = Mahasiswa::all(); // Mengambil semua data mahasiswa
-        return view('mahasiswa.index', compact('mahasiswas'));
+        return view('mahasiswa.index', compact('mahasiswa', 'judul', 'parent'));
     }
 
     public function tambahindex()
