@@ -80,7 +80,7 @@ class RumusanAkhirMkController extends Controller
                         'mata_kuliah_id' => $request->mata_kuliah_id,
                         'nama_mk' => $mataKuliah->nama,
                         'cpmk' => $cpmkKode,
-                        'skor_maksimal' => $request->skor_maksimal[$cpmkKode],
+                        'skor_maksimal' => $request->skor_maksimal[$cpmkKode] ?? 0,  // Pastikan nilai diambil sesuai CPMK
                         'total_skor' => array_sum($request->skor_maksimal),
                     ]);
                 }
@@ -133,7 +133,7 @@ class RumusanAkhirMkController extends Controller
 
         // Simpan total skor yang dihitung
         $rumusanAkhirMk->total_skor = $totalSkor;
-        
+
         // Update data rumusan akhir MK
         $rumusanAkhirMk->save();
 

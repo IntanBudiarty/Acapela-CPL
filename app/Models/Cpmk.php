@@ -39,6 +39,5 @@ class Cpmk extends Model
     public function cpl()
     {
         return $this->belongsTo(Cpl::class, 'cpl_id');
-
     }
 }

@@ -98,27 +98,33 @@
                     </thead>
                     <tbody>
                         @php
-                            $no = 1; // Inisialisasi nomor
+                            $no = 1;
                         @endphp
                         @foreach ($rumusanAkhirMkGrouped as $kd_mk => $group)
+                        @foreach($group as $key => $rumusan)
                             @php
-                                $rowspan = $group->count(); // Menghitung jumlah row dalam grup kd_mk
+                                $cpls = explode(',', $rumusan->kd_cpl);
+                                $cpmks = explode(',', $rumusan->kd_cpmk);
+                                $skorMaksimals = explode(',', $rumusan->skor_maksimal);
+                                $rowspan = count($cpmks);
                             @endphp
-                            @foreach($group as $key => $rumusan)
+                            
+                            @foreach ($cpmks as $index => $cpmk)
                                 <tr>
-                                    <!-- Kolom "No", "Kode MK" dan "Mata Kuliah" hanya ditampilkan di baris pertama -->
-                                    @if($key === 0)
+                                    @if($index === 0)
                                         <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $no++ }}</td>
                                         <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $rumusan->mataKuliah->kode ?? 'N/A' }}</td>
                                         <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $rumusan->mataKuliah->nama ?? 'N/A' }}</td>
+                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ implode(', ', $cpls) }}</td>
                                     @endif
-                                    <td>{{ $rumusan->kd_cpl ?? 'N/A' }}</td> <!-- Menampilkan nama mata kuliah -->
-                                    <td>{{ $rumusan->kd_cpmk ?? 'N/A' }}</td>
-                                    <td class="text-center">{{ $rumusan->skor_maksimal }}</td>
-                                    <!-- Tampilkan total skor hanya sekali untuk setiap kelompok -->
-                                    @if ($key === 0)
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $group->sum('skor_maksimal') }}</td>
-                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle" style="width: 100px">
+
+                                    <!-- Tampilkan CPMK dan Skor Maksimal sesuai dengan masing-masing CPMK -->
+                                    <td class="text-center">{{ $cpmk }}</td>
+                                    <td class="text-center">{{ $skorMaksimals[$index] ?? '0' }}</td> <!-- Perbaikan di sini -->
+
+                                    @if ($index === 0)
+                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ array_sum($skorMaksimals) }}</td>
+                                        <td rowspan="{{ $rowspan }}" class="text-center align-middle">
                                             <div class="btn-group">
                                                 <a href="{{ route('rumusanAkhirMk.edit', $rumusan->id) }}" class="btn btn-secondary btn-sm edit" title="Edit">
                                                     <i class="fas fa-pencil-alt"></i>
@@ -129,14 +135,15 @@
                                                     <button type="submit" class="btn btn-secondary btn-sm" title="Delete">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
-                                                </form>                                                
+                                                </form>                                                  
                                             </div>
                                         </td>
                                     @endif
                                 </tr>
                             @endforeach
                         @endforeach
-                    </tbody>
+                        @endforeach
+                    </tbody>
                 </table>
             </div>
         </div>
