@@ -199,13 +199,7 @@
                             <span class="nav-main-link-name">Mahasiswa</span>
                         </a>
                     </li>
-                    <li class="nav-main-item">
-                        <a class="nav-main-link{{ request()->is('ta','ta/*') ? ' active' : '' }}"
-                           href="{{URL::to('ta')}}">
-                            <i class="nav-main-link-icon fa fa-calendar"></i>
-                            <span class="nav-main-link-name">Tahun Ajaran</span>
-                        </a>
-                    </li>
+
                     <li class="nav-main-item">
                         <a class="nav-main-link{{ request()->is('mk','mk/*') ? ' active' : '' }}"
                            href="{{URL::to('mk')}}">
@@ -273,14 +267,7 @@
                             <span class="nav-main-link-name">Nilai</span>
                         </a>
                     </li>
-                    {{-- <li class="nav-main-item">
-                        <a class="nav-main-link{{ request()->is('dpna','dpna/*') ? ' active' : '' }}"
-                           href="{{URL::to('dpna')}}">
-                            <i class="nav-main-link-icon far fa-list-alt"></i>
-                            <span class="nav-main-link-name">DPNA</span>
-                        </a>
-                    </li>
-                     --}}
+                   
                     @endhasanyrole
                     @role('admin')
                     <li class="nav-main-item">
@@ -291,27 +278,7 @@
                         </a>
                     </li>
                     @endrole
-                    {{-- <li class="nav-main-item{{ request()->is('kcpmk','kcpl','kcpmk/*','kcpl/*') ? ' open' : '' }}">
-                        <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true"
-                           aria-expanded="true" href="#">
-                            <i class="nav-main-link-icon far fa-chart-bar"></i>
-                            <span class="nav-main-link-name">Ketercapaian</span>
-                        </a>
-                        <ul class="nav-main-submenu">
-                            <li class="nav-main-item">
-                                <a class="nav-main-link{{ request()->is('kcpmk','kcpmk/*') ? ' active' : '' }}"
-                                   href="{{URL::to('kcpmk')}}">
-                                    <span class="nav-main-link-name">CPMK</span>
-                                </a>
-                            </li> --}}
-                            {{-- <li class="nav-main-item">
-                                <a class="nav-main-link{{ request()->is('kcpl','kcpl/*') ? ' active' : '' }}"
-                                   href="{{URL::to('kcpl')}}">
-                                    <span class="nav-main-link-name">CPL</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li> --}}
+                  
                  
                 </ul>
             </div>
