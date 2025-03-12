@@ -191,13 +191,6 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-main-item">
-                        <a class="nav-main-link{{ request()->is('rolesmk','rolesmk/*') ? ' active' : '' }}"
-                           href="{{URL::to('rolesmk')}}">
-                            <i class="nav-main-link-icon fa fa-user-cog"></i>
-                            <span class="nav-main-link-name">Koordinator MK</span>
-                        </a>
-                    </li>
                     <li class="nav-main-heading">Kelola</li>
                     <li class="nav-main-item">
                         <a class="nav-main-link{{ request()->is('mhs','mhs/*') ? ' active' : '' }}"

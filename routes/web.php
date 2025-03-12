@@ -125,11 +125,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('cpmk/edit/{id}', [CPMKController::class, 'editindex']);
         Route::post('cpmk/edit/{id}/post', [CPMKController::class, 'edit'])->name('cpmk.edit');
         Route::post('cpmk/import', [CPMKController::class, 'import'])->name('cpmk.import');
-        // Peran Dosen
-        Route::get('rolesmk', [RolesmkController::class, 'index'])->name('rolesmk');
-        Route::get('rolesmk/cari', [RolesmkController::class, 'cari'])->name('carirolesmk');
-        Route::post('tambah-rolesmk', [RolesmkController::class, 'store'])->name('rolesmk.store');
-        Route::post('hapus-rolesmk', [RolesmkController::class, 'hapus']);
         // Rumusan Akhir MK
         Route::get('rumusanAkhirMk', [RumusanAkhirMkController::class, 'index'])->name('rumusanAkhirMk.index');
         Route::get('rumusanAkhirMk/tambah', [RumusanAkhirMkController::class, 'create'])->name('tambah-rumusan_akhir_mk');
