@@ -102,7 +102,7 @@ class RumusaAkhirCplController extends Controller
         $mataKuliah = MataKuliah::find($request->mata_kuliah_id);
 
         if (!$mataKuliah) {
-            return back()->with('error', 'Mata Kuliah tidak ditemukan!');
+            return back()->with('error', 'Mata Kuliah tidak dapat ditemukan!');
         }
 
         try {
