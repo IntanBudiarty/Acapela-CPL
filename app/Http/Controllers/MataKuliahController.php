@@ -8,6 +8,7 @@ use App\Imports\MataKuliahImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Validator;
+use Illuminate\Routing\Controller;
 
 class MataKuliahController extends Controller
 {
@@ -33,8 +34,8 @@ class MataKuliahController extends Controller
     public function index()
     {
         // Ambil data user yang sedang login
-        $user = auth()->user(); 
-        
+        $user = auth()->user();
+
         // Cek apakah user adalah dosen
         if ($user->role == 'dosen') {
             // Ambil hanya mata kuliah yang diampu oleh dosen yang sedang login
@@ -55,25 +56,25 @@ class MataKuliahController extends Controller
 
 
     public function tambahindex()
-{
-    // Mengambil data dosen dari tabel dosen_admins
-    $dosenAdmins = DosenAdmin::all();
-    
-    // Nilai tetap
-    $judul = 'Tambah Mata Kuliah';
-    $judulform = 'Form Tambah Mata Kuliah';
-    $parent = 'Mata Kuliah';
-    $subparent = 'Tambah';
+    {
+        // Mengambil data dosen dari tabel dosen_admins
+        $dosenAdmins = DosenAdmin::all();
 
-    // Mengirimkan variabel ke view
-    return view('matakuliah.tambah', [
-        'judul' => $judul,
-        'judulform' => $judulform,
-        'parent' => $parent,
-        'subparent' => $subparent,
-        'dosen_admins' => $dosenAdmins, // Pastikan variabel yang dikirim adalah $dosenAdmins
-    ]);
-}
+        // Nilai tetap
+        $judul = 'Tambah Mata Kuliah';
+        $judulform = 'Form Tambah Mata Kuliah';
+        $parent = 'Mata Kuliah';
+        $subparent = 'Tambah';
+
+        // Mengirimkan variabel ke view
+        return view('matakuliah.tambah', [
+            'judul' => $judul,
+            'judulform' => $judulform,
+            'parent' => $parent,
+            'subparent' => $subparent,
+            'dosen_admins' => $dosenAdmins, // Pastikan variabel yang dikirim adalah $dosenAdmins
+        ]);
+    }
 
     public function editindex(int $id)
     {
@@ -105,10 +106,10 @@ class MataKuliahController extends Controller
             'dosen_pengampu_1' => 'nullable|exists:dosen_admins,id', // Pastikan dosen pengampu 1 ada di tabel dosen_admins
             'dosen_pengampu_2' => 'nullable|exists:dosen_admins,id', // Pastikan dosen pengampu 2 ada di tabel dosen_admins
         ];
-    
+
         // Melakukan validasi
         $validator = Validator::make($request->all(), $rules);
-    
+
         // Jika validasi gagal, kembalikan ke form dengan pesan error
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all);
@@ -122,7 +123,7 @@ class MataKuliahController extends Controller
         $mk->semester = $request->input('semester');
         $mk->dosen_pengampu_1 = $request->input('dosen_pengampu_1');
         $mk->dosen_pengampu_2 = $request->input('dosen_pengampu_2');
-        
+
         // Menyimpan data mata kuliah ke database
         $mk->save();
 
@@ -140,18 +141,18 @@ class MataKuliahController extends Controller
             'kelas' => 'nullable|string', // Kelas bersifat opsional
             'sks' => 'required|integer',  // Validasi SKS
             'semester' => 'required|integer', // Validasi semester
-            'dosen_pengampu_1' => 'nullable|exists:dosen_admins,id', 
-            'dosen_pengampu_2' => 'nullable|exists:dosen_admins,id', 
+            'dosen_pengampu_1' => 'nullable|exists:dosen_admins,id',
+            'dosen_pengampu_2' => 'nullable|exists:dosen_admins,id',
         ];
-    
+
         // Validasi data yang dimasukkan
         $validator = Validator::make($request->all(), $rules);
-    
+
         // Jika validasi gagal, kembali ke form dengan pesan error dan input yang lama
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all);
         }
-    
+
 
         // Mengupdate data mata kuliah
         $mk->kode = $request->input('kode');
@@ -161,7 +162,7 @@ class MataKuliahController extends Controller
         $mk->semester = $request->input('semester');
         $mk->dosen_pengampu_1 = $request->input('dosen_pengampu_1');
         $mk->dosen_pengampu_2 = $request->input('dosen_pengampu_2');
-        
+
         // Menyimpan perubahan data ke database
         $mk->save();
 

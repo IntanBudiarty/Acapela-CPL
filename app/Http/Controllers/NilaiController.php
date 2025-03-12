@@ -12,14 +12,21 @@ class NilaiController extends Controller
 {
     public function index()
     {
-        // Ambil semua data nilai dengan relasi
-        $nilais = Nilai::with(['mataKuliah', 'mahasiswa', 'rumusanAkhirMk'])->get();
-        $mataKuliah = MataKuliah::all();
-        $mahasiswaList = Mahasiswa::all();
-        $rumusanAkhirMkList = RumusanAkhirMk::all();
+        $user = auth()->user(); // Ambil user yang sedang login
 
-        return view('nilai.index', compact('nilais', 'mataKuliah', 'mahasiswaList', 'rumusanAkhirMkList'));
+        // Jika user adalah dosen, hanya ambil mata kuliah yang dia ampu
+        if ($user->status == 'Dosen') {
+            $mataKuliah = MataKuliah::where('dosen_pengampu_1', $user->id)
+                ->orWhere('dosen_pengampu_2', $user->id)
+                ->get();
+        } else {
+            // Jika admin, tampilkan semua mata kuliah
+            $mataKuliah = MataKuliah::all();
+        }
+
+        return view('nilai.index', compact('mataKuliah'));
     }
+
 
     public function show($mataKuliahId)
     {
@@ -28,10 +35,10 @@ class NilaiController extends Controller
         $rumusanAkhirMkGrouped = RumusanAkhirMk::where('mata_kuliah_id', $mataKuliahId)
             ->get()
             ->groupBy('kd_cpl');
-            $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
-                $query->where('mata_kuliah_id', $mataKuliahId);
-            })->get();
-        
+        $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
+            $query->where('mata_kuliah_id', $mataKuliahId);
+        })->get();
+
 
         // Ambil nilai mahasiswa terkait
         $nilaiMahasiswa = [];
@@ -41,15 +48,15 @@ class NilaiController extends Controller
                 ->where('mata_kuliah_id', $mataKuliahId)
                 ->get()
                 ->keyBy('rumusan_akhir_mk_id');
-                $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
-        
-                $akumulasi = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
-                $mahasiswa->akumulasi = $akumulasi; // Simpan akumulasi di objek mahasiswa
-                $mahasiswa->grade = $this->getGrade($akumulasi); // Hitung grade berdasarkan akumulasi
-            }
-        
+            $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
 
-        return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa','akumulasiMahasiswa'));
+            $akumulasi = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
+            $mahasiswa->akumulasi = $akumulasi; // Simpan akumulasi di objek mahasiswa
+            $mahasiswa->grade = $this->getGrade($akumulasi); // Hitung grade berdasarkan akumulasi
+        }
+
+
+        return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa', 'akumulasiMahasiswa'));
     }
 
     public function updateNilai(Request $request)
@@ -59,12 +66,12 @@ class NilaiController extends Controller
             'nilai' => 'required|array',
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
         ]);
-    
+
         $mataKuliahId = $request->mata_kuliah_id;
-    
+
         foreach ($request->nilai as $mahasiswaId => $rumusans) {
             $totalNilai = 0;
-    
+
             foreach ($rumusans as $rumusanAkhirMkId => $nilai) {
                 Nilai::updateOrCreate(
                     [
@@ -74,18 +81,18 @@ class NilaiController extends Controller
                     ],
                     ['nilai' => $nilai]
                 );
-    
+
                 $totalNilai += $nilai; // Hitung total nilai
             }
-    
+
             // Update total nilai
             Nilai::where('mahasiswa_id', $mahasiswaId)
                 ->where('mata_kuliah_id', $mataKuliahId)
                 ->update(['total' => $totalNilai]);
         }
-    
+
         return redirect()->route('nilai.index')->with('success', 'Nilai berhasil diperbarui.');
-    }     
+    }
 
     private function getGrade($total)
     {
