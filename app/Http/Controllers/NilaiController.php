@@ -30,33 +30,28 @@ class NilaiController extends Controller
 
     public function show($mataKuliahId)
     {
-        // Ambil data mata kuliah, mahasiswa, dan rumusan terkait
         $mataKuliah = MataKuliah::findOrFail($mataKuliahId);
-        $rumusanAkhirMkGrouped = RumusanAkhirMk::where('mata_kuliah_id', $mataKuliahId)
-            ->get()
-            ->groupBy('kd_cpl');
+
+        // Mengambil semua mahasiswa yang terdaftar di mata kuliah ini
         $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
             $query->where('mata_kuliah_id', $mataKuliahId);
         })->get();
 
+        // Mengambil rumusan akhir MK terkait
+        $rumusanAkhirMkGrouped = RumusanAkhirMk::where('mata_kuliah_id', $mataKuliahId)
+            ->get()
+            ->groupBy('kd_cpl');
 
-        // Ambil nilai mahasiswa terkait
+        // Mengambil nilai mahasiswa terkait
         $nilaiMahasiswa = [];
-        $akumulasiMahasiswa = [];
         foreach ($mahasiswaList as $mahasiswa) {
             $nilaiMahasiswa[$mahasiswa->id] = Nilai::where('mahasiswa_id', $mahasiswa->id)
                 ->where('mata_kuliah_id', $mataKuliahId)
                 ->get()
                 ->keyBy('rumusan_akhir_mk_id');
-            $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
-
-            $akumulasi = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
-            $mahasiswa->akumulasi = $akumulasi; // Simpan akumulasi di objek mahasiswa
-            $mahasiswa->grade = $this->getGrade($akumulasi); // Hitung grade berdasarkan akumulasi
         }
 
-
-        return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa', 'akumulasiMahasiswa'));
+        return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa'));
     }
 
     public function updateNilai(Request $request)

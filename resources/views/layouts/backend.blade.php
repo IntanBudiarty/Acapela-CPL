@@ -266,7 +266,7 @@
                         <a class="nav-main-link{{ request()->is('ketercapaian','ketercapaian/*') ? ' active' : '' }}"
                            href="{{URL::to('ketercapaian')}}">
                            <i class="nav-main-link-icon far fa-chart-bar"></i>
-                            <span class="nav-main-link-name">ketercapaian</span>
+                            <span class="nav-main-link-name">Ketercapaian</span>
                         </a>
                     </li>
                     {{-- <li class="nav-main-item{{ request()->is('kcpmk','kcpl','kcpmk/*','kcpl/*') ? ' open' : '' }}">

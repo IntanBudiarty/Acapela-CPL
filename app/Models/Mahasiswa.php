@@ -41,14 +41,14 @@ class Mahasiswa extends Model
     {
         return $this->hasMany(Kcpl::class);
     }
-    public function mahasiswas() 
-    { 
+    public function mahasiswas()
+    {
         return $this->belongsToMany(Mahasiswa::class, 'mahasiswa_mata_kuliah', 'mata_kuliah_id', 'mahasiswa_id');
     }
     public function mataKuliahs()
     {
         return $this->belongsToMany(MataKuliah::class, 'mahasiswa_mata_kuliah', 'mahasiswa_id', 'mata_kuliah_id');
-    }  
+    }
     public function rumusanAkhirMk()
     {
         return $this->belongsToMany(RumusanAkhirMk::class);
