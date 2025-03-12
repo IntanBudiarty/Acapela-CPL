@@ -199,22 +199,24 @@ class MahasiswaController extends Controller
     }
 
     public function import(Request $request)
-    {
-        // Validasi file yang diunggah
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls|max:2048',
-        ]);
+{
+    // Validasi input
+    $request->validate([
+        'angkatan' => 'required|integer',
+        'file' => 'required|mimes:xlsx,xls|max:2048',
+    ]);
 
-        $file = $request->file('file');
+    $file = $request->file('file');
+    $angkatan = $request->angkatan; // Ambil angkatan dari form
 
-        try {
-            // Proses impor file
-            // Excel::import(new ImportMahasiswa, $request->file('file'));
-            Excel::import(new MahasiswaImport, $file->getRealPath());
-            return redirect()->route('mhs')->with('success', 'Data berhasil diimport.');
-        } catch (\Exception $e) {
-            // Tangani kesalahan
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
-        }
+    try {
+        // Proses impor file dengan menyertakan angkatan sebagai parameter
+        Excel::import(new MahasiswaImport($angkatan), $file);
+
+        return redirect()->route('mhs')->with('success', "Data mahasiswa angkatan $angkatan berhasil diimport.");
+    } catch (\Exception $e) {
+        // Tangani kesalahan
+        return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    }
     }
 }
