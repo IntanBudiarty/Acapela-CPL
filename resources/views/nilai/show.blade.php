@@ -6,8 +6,12 @@
 
 @section('content') 
 <div class="bg-body-light"> 
-    <div class="content content-full"> 
-        <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Nilai Mahasiswa</h1>
+    <div class="content content-full d-flex justify-content-between align-items-center">
+        <h1 class="fs-3 fw-semibold my-2 my-sm-3">Nilai Mahasiswa</h1>
+        <div class="d-flex gap-2">
+            <a href="{{ route('nilai.index') }}" class="btn btn-secondary">Kembali</a>
+            <a href="#" class="btn btn-primary">Simpan</a>
+        </div>
     </div>
 </div>
 
@@ -17,22 +21,22 @@
             <h3 class="block-title">Informasi Mahasiswa</h3>
         </div>
         <div class="block-content">
-           
-                <!-- Informasi Mata Kuliah -->
-                <table class="table table-bordered">
-                    <tr>
-                        <td><strong>Kode MK:</strong></td>
-                        <td>{{ $mataKuliah->kode }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Nama MK:</strong></td>
-                        <td>{{ $mataKuliah->nama }}</td>
-                    </tr>
-                </table>
-                <form action="{{ route('nilai.updateNilai') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-                
+            <!-- Informasi Mata Kuliah -->
+            <table class="table table-bordered">
+                <tr>
+                    <td><strong>Kode MK:</strong></td>
+                    <td>{{ $mataKuliah->kode }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Nama MK:</strong></td>
+                    <td>{{ $mataKuliah->nama }}</td>
+                </tr>
+            </table>
+
+            <form action="{{ route('nilai.updateNilai') }}" method="POST">
+                @csrf
+                <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
+
                 <!-- Tabel Input Nilai -->
                 <table class="table table-bordered">
                     <thead>
@@ -95,18 +99,8 @@
                             @endforeach
                         @endforeach
                     </tbody>                    
-                    
                 </table>
-
-                <!-- Tombol Kembali dan Simpan -->
-                <div class="d-flex justify-content-between mt-3">
-                    <a href="{{ route('nilai.index') }}" class="btn btn-secondary">Kembali</a>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+               
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -3,22 +3,32 @@
 namespace App\Imports;
 
 use App\Models\Cpmk;
+use App\Models\Cpl;
+use App\Models\MataKuliah;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class CpmkImport implements ToModel
+class CpmkImport implements ToModel, WithHeadingRow
 {
-    /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
     public function model(array $row)
     {
-        return new Cpmk([
-           'Kode CPL'     => $row[0],
-           'kode CPMK' => ($row[1]),
-           'Nama CPMK' => ($row[2]),
-           'Kode MK' => ($row[3]),
+        // Temukan atau buat CPL berdasarkan kode yang diberikan
+        $cpl = Cpl::firstOrCreate(['kode_cpl' => $row['kode_cpl']]);
+
+        // Simpan data CPMK
+        $cpmk = Cpmk::create([
+            'cpl_id'    => $cpl->id, // Hubungkan dengan CPL
+            'kode_cpmk' => $row['kode_cpmk'],
+            'nama_cpmk' => $row['nama_cpmk'],
         ]);
+
+        // Proses relasi dengan Mata Kuliah
+        $kodeMks = explode(',', $row['kode_mk']); // Pisahkan kode MK jika lebih dari satu
+        foreach ($kodeMks as $kodeMk) {
+            $mataKuliah = MataKuliah::firstOrCreate(['kode' => trim($kodeMk)]);
+            $cpmk->mataKuliah()->attach($mataKuliah->id); // Tambahkan ke relasi pivot
+        }
+
+        return $cpmk;
     }
 }
