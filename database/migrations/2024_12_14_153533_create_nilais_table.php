@@ -19,9 +19,9 @@ class CreateNilaisTable extends Migration
             $table->foreignId('mahasiswa_id')->constrained('mahasiswas');
             $table->unsignedBigInteger('rumusan_id')->nullable();
             $table->foreignId('rumusan_akhir_mk_id')->constrained('rumusan_akhir_mk');
-            $table->integer('nilai')->nullable();
-            $table->integer('total')->nullable();
-            $table->integer('skor_maks')->default(100);
+            $table->double('nilai')->nullable();
+            $table->double('total')->nullable();
+            $table->double('skor_maks')->default(100);
             $table->timestamps();
             $table->foreign('mata_kuliah_id')->references('id')->on('mata_kuliahs')->onDelete('cascade');
             $table->foreign('mahasiswa_id')->references('id')->on('mahasiswas')->onDelete('cascade');
