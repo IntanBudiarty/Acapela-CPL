@@ -59,6 +59,29 @@
                     </div>
                 @endif
 
+                <!-- Form Import Excel -->
+                <div class="block-content block-content-full">
+                    <form action="{{ route('mahasiswa.import') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group">
+                            <label for="angkatan">Pilih Angkatan</label>
+                            <select name="angkatan" class="form-control" required>
+                                <option value="">-- Pilih Angkatan --</option>
+                                @foreach ($mahasiswa as $angkatan => $listMahasiswa)
+                                    <option value="{{ $angkatan }}">{{ $angkatan }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <label for="file">Import Excel</label>
+                            <input type="file" name="file" class="form-control" accept=".xls,.xlsx" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-2">Import</button>
+                    </form>
+                </div>
+
                 <div class="table-responsive">
                     @foreach ($mahasiswa as $angkatan => $listMahasiswa)
                         <!-- Judul Angkatan yang dapat diklik -->
