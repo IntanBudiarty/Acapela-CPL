@@ -9,6 +9,7 @@ use App\Models\DosenAdmin;
 use App\Models\MataKuliah;
 use App\Models\Nilai;
 use App\Models\TahunAjaran;
+use App\Models\RumusanAkhirCpl;
 use Auth;
 use Crypt;
 // use Illuminate\Http\Request;
@@ -32,36 +33,57 @@ class KetercapaianController extends Controller
         ]);
     }
     public function show($id)
-{
-    // Ambil data mahasiswa
-    $mahasiswa = Mahasiswa::findOrFail($id);
+    {
+        // Ambil data mahasiswa berdasarkan ID
+        $mahasiswa = Mahasiswa::findOrFail($id);
     
-    // Ambil data ketercapaian untuk mahasiswa ini
-    $ketercapaian = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
-        ->where('mahasiswa_id', $id)
-        ->get()
-        ->groupBy('mata_kuliah_id');
+        // Ambil data ketercapaian berdasarkan mata kuliah
+        $ketercapaian = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
+            ->where('mahasiswa_id', $id)
+            ->get()
+            ->groupBy('mata_kuliah_id');
     
-
-    // Ambil rentang nilai dan total nilai untuk setiap mata kuliah
-    $rentangNilai = Nilai::where('mahasiswa_id', $id)
-        ->get()
+        // Ambil total nilai dan rentang nilai untuk setiap mata kuliah
+        $rentangNilai = Nilai::where('mahasiswa_id', $id)
+        ->selectRaw('mata_kuliah_id, SUM(nilai) as total_nilai')
         ->groupBy('mata_kuliah_id')
+        ->get()
+        ->keyBy('mata_kuliah_id')
         ->map(function ($nilaiItems) {
-            $totalNilai = $nilaiItems->sum('nilai');  // Jumlahkan nilai untuk setiap mata kuliah
             return [
-                'total_nilai' => $totalNilai,
-                'grade' => $this->getGrade($totalNilai), // Tentukan grade berdasarkan total nilai
-            ];
-        });
-
-
-    // Ambil capaian CPL dari tabel cpls dan hitung total nilai berdasarkan CPL
-    $capaianCpl = $this->calculateCapaianCpl($id);
+                'total_nilai' => $nilaiItems->total_nilai,
+                'grade' => $this->getGrade($nilaiItems->total_nilai),
+            ];    
+            });
     
-    // Kirim data ke view
-    return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl'));
-}
+        // Ambil capaian CPL berdasarkan nilai mahasiswa
+        $capaianCpl = $this->calculateCapaianCpl($id);
+    
+        // Ambil skor maksimal dari tabel `rumusan_akhir_cpl` per CPL
+        $nilaiMaksimalPerCpl = RumusanAkhirCpl::pluck('total_skor', 'kd_cpl'); // Perbaikan: pakai 'kd_cpl'
+    
+        // Hitung persentase ketercapaian untuk setiap CPL
+        foreach ($capaianCpl as $kdCpl => &$cplData) { // Pakai 'kdCpl' sesuai dengan data yang ada
+            $nilaiMax = $nilaiMaksimalPerCpl[$kdCpl] ?? 0;
+            $totalNilaiMahasiswa = $cplData['total_nilai'];
+    
+            // Hitung persentase jika nilai maksimal tersedia
+            if ($nilaiMax > 0) {
+                $cplData['persentase'] = number_format(($totalNilaiMahasiswa / $nilaiMax) * 100, 2);
+            } else {
+                $cplData['persentase'] = 0;
+            }
+        }
+    
+        // Kirim data ke view
+        return view('ketercapaian.show', compact(
+            'mahasiswa',
+            'ketercapaian',
+            'rentangNilai',
+            'capaianCpl'
+        ));
+    }    
+
 
 public function calculateCapaianCpl($mahasiswaId)
 {
