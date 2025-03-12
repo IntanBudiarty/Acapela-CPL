@@ -81,8 +81,8 @@
                 <thead>
                     <tr>
                         <th>Kode CPL</th>
-                        <th>Nama CPL</th>
                         <th>Total Nilai</th>
+                        <th>Total Skor Maksimal</th> <!-- Tambahkan kolom ini -->
                         <th>Persentase Ketercapaian</th>
                     </tr>
                 </thead>
@@ -90,14 +90,15 @@
                     @foreach ($capaianCpl as $item)
                         <tr>
                             <td>{{ $item['kode_cpl'] }}</td>
-                            <td>{{ $item['nama_cpl'] }}</td>
                             <td>{{ $item['total_nilai'] }}</td>
+                            <td>{{ $item['total_skor_maksimal'] ?? '-' }}</td> <!-- Tampilkan total skor maksimal -->
                             <td>{{ $item['persentase'] }}%</td>
                         </tr>
                     @endforeach
                 </tbody>
-            </table>               
+            </table>
         </div>
-    </div>    
+    </div>
+    
     
 @endsection
