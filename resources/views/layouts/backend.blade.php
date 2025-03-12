@@ -262,6 +262,27 @@
                             <span class="nav-main-link-name">Nilai</span>
                         </a>
                     </li> --}}
+                    @else
+                    <li class="nav-main-heading">Kelola</li>
+                    @endrole
+                    @hasanyrole('dosen|admin')
+                    <li class="nav-main-item">
+                        <a class="nav-main-link{{ request()->is('nilai','nilai/*') ? ' active' : '' }}"
+                           href="{{URL::to('nilai')}}">
+                            <i class="nav-main-link-icon si si-pencil"></i>
+                            <span class="nav-main-link-name">Nilai</span>
+                        </a>
+                    </li>
+                    {{-- <li class="nav-main-item">
+                        <a class="nav-main-link{{ request()->is('dpna','dpna/*') ? ' active' : '' }}"
+                           href="{{URL::to('dpna')}}">
+                            <i class="nav-main-link-icon far fa-list-alt"></i>
+                            <span class="nav-main-link-name">DPNA</span>
+                        </a>
+                    </li>
+                     --}}
+                    @endhasanyrole
+                    @role('admin')
                     <li class="nav-main-item">
                         <a class="nav-main-link{{ request()->is('ketercapaian','ketercapaian/*') ? ' active' : '' }}"
                            href="{{URL::to('ketercapaian')}}">
@@ -269,6 +290,7 @@
                             <span class="nav-main-link-name">Ketercapaian</span>
                         </a>
                     </li>
+                    @endrole
                     {{-- <li class="nav-main-item{{ request()->is('kcpmk','kcpl','kcpmk/*','kcpl/*') ? ' open' : '' }}">
                         <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true"
                            aria-expanded="true" href="#">
@@ -290,26 +312,7 @@
                             </li>
                         </ul>
                     </li> --}}
-                    @else
-                        <li class="nav-main-heading">Kelola</li>
-                        @endrole
-                        @hasanyrole('dosen|admin')
-                        <li class="nav-main-item">
-                            <a class="nav-main-link{{ request()->is('nilai','nilai/*') ? ' active' : '' }}"
-                               href="{{URL::to('nilai')}}">
-                                <i class="nav-main-link-icon si si-pencil"></i>
-                                <span class="nav-main-link-name">Nilai</span>
-                            </a>
-                        </li>
-                        {{-- <li class="nav-main-item">
-                            <a class="nav-main-link{{ request()->is('dpna','dpna/*') ? ' active' : '' }}"
-                               href="{{URL::to('dpna')}}">
-                                <i class="nav-main-link-icon far fa-list-alt"></i>
-                                <span class="nav-main-link-name">DPNA</span>
-                            </a>
-                        </li>
-                         --}}
-                        @endhasanyrole
+                 
                 </ul>
             </div>
             <!-- END Side Navigation -->
