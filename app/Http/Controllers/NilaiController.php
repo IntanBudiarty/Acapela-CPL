@@ -51,6 +51,12 @@ class NilaiController extends Controller
                 ->keyBy('rumusan_akhir_mk_id');
         }
 
+        // Menghitung nilai huruf berdasarkan total nilai untuk setiap mahasiswa
+        foreach ($mahasiswaList as $mahasiswa) {
+            $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
+            $mahasiswa->grade = $this->getGrade($totalNilai);  // Tentukan grade berdasarkan total nilai
+        }
+
         return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa'));
     }
 
@@ -103,10 +109,12 @@ class NilaiController extends Controller
             return 'B-';
         } elseif ($total >= 60) {
             return 'C+';
-        } elseif ($total >= 50) {
+        } elseif ($total >= 55) {
             return 'C';
-        } else {
+        } elseif ($total >= 45) {
             return 'D';
+        } else {
+            return 'E';
         }
     }
 }
