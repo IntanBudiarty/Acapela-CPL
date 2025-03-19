@@ -45,7 +45,7 @@
                             <th>Skor Maks</th>
                             <th>Nilai</th>
                             <th>Total</th>
-                            <th>Akumulasi</th>
+                            <th>Nilai Huruf</th>
                         </tr>
                     </thead>
                     <tbody>

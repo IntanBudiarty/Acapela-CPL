@@ -37,7 +37,7 @@
                         <th>Kode CPMK</th>
                         <th>Nilai</th>
                         <th>Total Skor</th>
-                        <th>Akumulasi</th>
+                        <th>Nilai Huruf</th>
                     </tr>
                 </thead>
                 <tbody>
