@@ -12,9 +12,10 @@ class NilaiController extends Controller
 {
     public function index()
     {
-        $user = auth()->user(); // Ambil user yang sedang login
+        $user = auth()->user();
+        $angkatanList = Mahasiswa::select('angkatan')->distinct()->orderBy('angkatan', 'desc')->pluck('angkatan');
 
-        // Jika user adalah dosen, hanya ambil mata kuliah yang dia ampu
+        $selectedAngkatan = $request->angkatan ?? $angkatanList->first();
         if ($user->status == 'Dosen') {
             $mataKuliah = MataKuliah::where('dosen_pengampu_1', $user->id)
                 ->orWhere('dosen_pengampu_2', $user->id)
@@ -24,25 +25,28 @@ class NilaiController extends Controller
             $mataKuliah = MataKuliah::all();
         }
 
-        return view('nilai.index', compact('mataKuliah'));
+        return view('nilai.index', compact('mataKuliah', 'angkatanList', 'selectedAngkatan'));
     }
 
 
-    public function show($mataKuliahId)
+    public function show(Request $request, $mataKuliahId)
     {
         $mataKuliah = MataKuliah::findOrFail($mataKuliahId);
 
-        // Mengambil semua mahasiswa yang terdaftar di mata kuliah ini
-        $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
-            $query->where('mata_kuliah_id', $mataKuliahId);
-        })->get();
+        $angkatanList = Mahasiswa::select('angkatan')->distinct()->orderBy('angkatan', 'desc')->pluck('angkatan');
+        $selectedAngkatan = $request->angkatan ?? $angkatanList->first();
 
-        // Mengambil rumusan akhir MK terkait
+        // Filter mahasiswa berdasarkan angkatan
+        $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
+                $query->where('mata_kuliah_id', $mataKuliahId);
+            })
+            ->where('angkatan', $selectedAngkatan)
+            ->get();
+
         $rumusanAkhirMkGrouped = RumusanAkhirMk::where('mata_kuliah_id', $mataKuliahId)
             ->get()
             ->groupBy('kd_cpl');
 
-        // Mengambil nilai mahasiswa terkait
         $nilaiMahasiswa = [];
         foreach ($mahasiswaList as $mahasiswa) {
             $nilaiMahasiswa[$mahasiswa->id] = Nilai::where('mahasiswa_id', $mahasiswa->id)
@@ -51,8 +55,9 @@ class NilaiController extends Controller
                 ->keyBy('rumusan_akhir_mk_id');
         }
 
-        return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa'));
+        return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa', 'angkatanList', 'selectedAngkatan'));
     }
+
 
     public function updateNilai(Request $request)
     {

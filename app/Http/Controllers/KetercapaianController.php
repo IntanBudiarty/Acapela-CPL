@@ -12,20 +12,32 @@ use Illuminate\Support\Facades\DB;
 
 class KetercapaianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $angkatan = $request->input('angkatan');
+
+        $mahasiswaQuery = DB::table('mahasiswas');
+
+        if ($angkatan) {
+            $mahasiswaQuery->where('angkatan', $angkatan);
+        }
+
+        $mahasiswa = $mahasiswaQuery->get();
         $ketercapaian = Ketercapaian::with('mahasiswa', 'mataKuliah')->get();
         $nilai = Nilai::with('mahasiswa', 'mataKuliah')->get();
         $mataKuliah = MataKuliah::all();
-        $mahasiswa = DB::table('mahasiswas')->get();
+        $listAngkatan = DB::table('mahasiswas')->select('angkatan')->distinct()->orderBy('angkatan', 'desc')->get();
 
         return view('ketercapaian.index', [
             'nilai' => $nilai,
             'mahasiswa' => $mahasiswa,
             'mataKuliah' => $mataKuliah,
             'ketercapaian' => $ketercapaian,
+            'listAngkatan' => $listAngkatan,
+            'selectedAngkatan' => $angkatan
         ]);
     }
+
 
     public function show($id)
     {

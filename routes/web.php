@@ -150,7 +150,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => ['role:admin|dosen']], function () {
 
         // Ketercapaian CPMK 
-        Route::get('ketercapaian', [KetercapaianController::class, 'index']);
+        Route::get('/ketercapaian', [KetercapaianController::class, 'index'])->name('ketercapaian.index');
         Route::get('ketercapaian/{id}', [KetercapaianController::class, 'show'])->name('ketercapaian.show');
         // Route::get('ketercapaian', [KetercapaianController::class, 'index'])->name('ketercapaian');
 

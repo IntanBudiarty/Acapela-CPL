@@ -1,12 +1,12 @@
-@extends('layouts.backend')  
+@extends('layouts.backend')
 
 @section('title')
     Nilai Mahasiswa
 @endsection
 
-@section('content') 
-<div class="bg-body-light"> 
-    <div class="content content-full"> 
+@section('content')
+<div class="bg-body-light">
+    <div class="content content-full">
         <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Nilai Mahasiswa</h1>
     </div>
 </div>
@@ -14,26 +14,49 @@
 <div class="content">
     <div class="block block-rounded block-fx-shadow">
         <div class="block-header block-header-default">
-            <h3 class="block-title">Informasi Mahasiswa</h3>
+            <h3 class="block-title">Pilih Angkatan</h3>
         </div>
         <div class="block-content">
-           
-                <!-- Informasi Mata Kuliah -->
-                <table class="table table-bordered">
-                    <tr>
-                        <td><strong>Kode MK:</strong></td>
-                        <td>{{ $mataKuliah->kode }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Nama MK:</strong></td>
-                        <td>{{ $mataKuliah->nama }}</td>
-                    </tr>
-                </table>
-                <form action="{{ route('nilai.updateNilai') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-                
-                <!-- Tabel Input Nilai -->
+            <form method="GET" action="{{ route('nilai.show', $mataKuliah->id) }}">
+                <label for="angkatan">Pilih Angkatan:</label>
+                <select name="angkatan" id="angkatan" class="form-control" onchange="this.form.submit()">
+                    @foreach ($angkatanList as $angkatan)
+                        <option value="{{ $angkatan }}" {{ $angkatan == $selectedAngkatan ? 'selected' : '' }}>
+                            {{ $angkatan }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div class="block block-rounded block-fx-shadow mt-3">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Informasi Mata Kuliah</h3>
+        </div>
+        <div class="block-content">
+            <table class="table table-bordered">
+                <tr>
+                    <td><strong>Kode MK:</strong></td>
+                    <td>{{ $mataKuliah->kode }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Nama MK:</strong></td>
+                    <td>{{ $mataKuliah->nama }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="block block-rounded block-fx-shadow mt-3">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Nilai Mahasiswa</h3>
+        </div>
+        <div class="block-content">
+            <form action="{{ route('nilai.updateNilai') }}" method="POST">
+                @csrf
+                <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
+
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -50,17 +73,13 @@
                     </thead>
                     <tbody>
                         @foreach ($mahasiswaList as $index => $mahasiswa)
-                            @php 
-                                $totalNilai = 0; 
-                            @endphp
+                            @php $totalNilai = 0; @endphp
                             @foreach ($rumusanAkhirMkGrouped as $rumusans)
                                 @foreach ($rumusans as $rumusan)
                                     @php
-                                        // Ambil nilai yang sudah tersimpan untuk mahasiswa dan rumusan ini
                                         $existingNilai = isset($nilaiMahasiswa[$mahasiswa->id][$rumusan->id]) 
                                             ? $nilaiMahasiswa[$mahasiswa->id][$rumusan->id]->nilai 
                                             : 0;
-                                        // Menjumlahkan nilai yang ada
                                         $totalNilai += $existingNilai;
                                     @endphp
                                     <tr>
@@ -94,11 +113,9 @@
                                 @endforeach
                             @endforeach
                         @endforeach
-                    </tbody>                    
-                    
+                    </tbody>
                 </table>
 
-                <!-- Tombol Kembali dan Simpan -->
                 <div class="d-flex justify-content-between mt-3">
                     <a href="{{ route('nilai.index') }}" class="btn btn-secondary">Kembali</a>
                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -107,54 +124,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const nilaiInputs = document.querySelectorAll('.nilai-input');
-
-        nilaiInputs.forEach(input => {
-            input.addEventListener('input', function() {
-                const nim = this.getAttribute('data-nim');
-                const totalId = this.getAttribute('data-total-id');
-                let totalNilai = 0;
-
-                // Menjumlahkan semua nilai untuk NIM yang sama
-                document.querySelectorAll(`.nilai-input[data-nim="${nim}"]`).forEach(el => {
-                    totalNilai += parseInt(el.value) || 0;
-                });
-
-                // Menampilkan total di kolom Total
-                document.getElementById(totalId).innerText = totalNilai;
-
-                // Tentukan akumulasi (grade) berdasarkan total nilai
-                const akumulasi = getGrade(totalNilai);
-                document.getElementById(`akumulasi-${nim}`).innerText = akumulasi;
-            });
-        });
-
-        // Fungsi untuk menentukan grade (akumulasi) berdasarkan total nilai
-        function getGrade(total) {
-            if (total >= 85) {
-                return 'A';
-            } else if (total >= 80) {
-                return 'A-';
-            } else if (total >= 75) {
-                return 'B+';
-            } else if (total >= 70) {
-                return 'B';
-            } else if (total >= 65) {
-                return 'B-';
-            } else if (total >= 60) {
-                return 'C+';
-            } else if (total >= 55) {
-                return 'C';
-            } else if (total >= 45) {
-                return 'D';
-            } else {
-                return 'E';
-            }
-        }
-    });
-</script>
-
 @endsection

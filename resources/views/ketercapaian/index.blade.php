@@ -56,6 +56,21 @@
                 <h3 class="block-title text-center">Data Ketercapaian Mahasiswa</h3>
             </div>
             <div class="block-content block-content-full">
+                <form method="GET" action="{{ route('ketercapaian.index') }}" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <select name="angkatan" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Pilih Angkatan --</option>
+                                @foreach ($listAngkatan as $item)
+                                    <option value="{{ $item->angkatan }}" {{ request('angkatan') == $item->angkatan ? 'selected' : '' }}>
+                                        {{ $item->angkatan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                
                 <!-- Display Error/Succes Messages -->
                 @if(session('errors'))
                     <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
