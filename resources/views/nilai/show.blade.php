@@ -19,7 +19,7 @@
         <div class="block-content">
             <form method="GET" action="{{ route('nilai.show', $mataKuliah->id) }}">
                 <label for="angkatan">Pilih Angkatan:</label>
-                <select name="angkatan" id="angkatan" class="form-control" onchange="this.form.submit()">
+                <select name="angkatan" id="angkatan" class="form-control mb-4" onchange="this.form.submit()">
                     @foreach ($angkatanList as $angkatan)
                         <option value="{{ $angkatan }}" {{ $angkatan == $selectedAngkatan ? 'selected' : '' }}>
                             {{ $angkatan }}
@@ -117,8 +117,8 @@
                 </table>
 
                 <div class="d-flex justify-content-between mt-3">
-                    <a href="{{ route('nilai.index') }}" class="btn btn-secondary">Kembali</a>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <a href="{{ route('nilai.index') }}" class="btn btn-secondary mb-4">Kembali</a>
+                    <button type="submit" class="btn btn-primary mb-4">Simpan</button>
                 </div>
             </form>
         </div>
