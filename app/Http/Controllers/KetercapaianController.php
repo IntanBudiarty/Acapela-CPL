@@ -126,8 +126,6 @@ class KetercapaianController extends Controller
     }
 
 
-
-
     private function getGrade($total)
     {
         if ($total >= 85) {
@@ -142,10 +140,12 @@ class KetercapaianController extends Controller
             return 'B-';
         } elseif ($total >= 60) {
             return 'C+';
-        } elseif ($total >= 50) {
+        } elseif ($total >= 55) {
             return 'C';
-        } else {
+        } elseif ($total >= 45) {
             return 'D';
+        } else {
+            return 'E';
         }
     }
 }

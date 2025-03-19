@@ -47,6 +47,7 @@
         <div class="block block-rounded block-fx-shadow">
             <div class="block-header block-header-default">
                 <h3 class="block-title">Mahasiswa <small>List</small></h3>
+                <p class="fs-7 fw-lighter text-danger">*untuk menampilkan angkatan baru ,<br> tambahkan satu mahasiswa untuk angkatan baru tersebut.</p>
                 <div class="block-options">
                     <a href="{{ route('tambahmhs') }}" class="btn btn-sm btn-primary">Tambah</a>
                 </div>
