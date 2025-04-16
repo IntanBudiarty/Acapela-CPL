@@ -40,9 +40,15 @@ class KetercapaianController extends Controller
 
 
     public function show(Request $request, $id)
+<<<<<<< HEAD
 {
     // Ambil semester dari request
     $semester = request('semester');
+=======
+    {
+        // Ambil data mahasiswa berdasarkan ID
+        $mahasiswa = Mahasiswa::findOrFail($id);
+>>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
 
     // Ambil data mahasiswa berdasarkan ID
     $mahasiswa = Mahasiswa::findOrFail($id);
@@ -51,11 +57,40 @@ class KetercapaianController extends Controller
     $ketercapaianQuery = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
         ->where('mahasiswa_id', $id);
 
+<<<<<<< HEAD
     // Jika semester dipilih, filter berdasarkan semester dari relasi mata kuliah
     if ($semester) {
         $ketercapaianQuery->whereHas('mataKuliah', function ($query) use ($semester) {
             $query->where('semester', $semester);
         });
+=======
+        // Hitung capaian CPL
+        $capaianCpl = $this->calculateCapaianCpl($id);
+
+        $semester = request('semester');
+
+        $nilaiQuery = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
+            ->where('mahasiswa_id', $id);
+
+        if ($semester) {
+            $nilaiQuery->whereHas('mataKuliah', function ($q) use ($semester) {
+                $q->where('semester', $semester);
+            });
+        }
+
+        $nilai = $nilaiQuery->get();
+
+        // Filter data menjadi per mata kuliah
+        $ketercapaian = $nilai->groupBy('mata_kuliah_id');
+
+        // Hitung capaian CPL
+        // $capaianCpl = $this->hitungCapaianCpl($nilai); // <- sesuaikan ini jika perlu
+
+        $semesters = MataKuliah::distinct()->pluck('semester');
+
+        // Kirim data ke view
+        return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl', 'semesters'));
+>>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
     }
 
     $ketercapaian = $ketercapaianQuery->get()->groupBy('mata_kuliah_id');
@@ -99,7 +134,7 @@ class KetercapaianController extends Controller
             ->where('mahasiswa_id', $mahasiswaId)
             ->get();
 
-        // **Ambil total skor maksimal per CPL dengan menjumlahkan seluruh skor_maksimal dari CPMK terkait**
+        // Ambil total skor maksimal per CPL dengan menjumlahkan seluruh skor_maksimal dari CPMK terkait
         $rumusanAkhirCpl = DB::table('rumusan_akhir_cpl')
             ->select('kd_cpl', DB::raw('SUM(skor_maksimal) as total_skor_maksimal'))
             ->groupBy('kd_cpl')
@@ -133,22 +168,29 @@ class KetercapaianController extends Controller
             }
         }
 
-        // **Hitung persentase ketercapaian berdasarkan total skor maksimal dari `rumusanAkhirCpl`**
+        // *Hitung persentase ketercapaian berdasarkan total skor maksimal dari rumusanAkhirCpl*
         foreach ($capaianCpl as $kodeCpl => &$cplData) {
             $nilaiMax = $cplData['total_skor_maksimal']; // Gunakan total skor maksimal yang benar
 
             if ($nilaiMax > 0) {
-                // **Hitung persentase ketercapaian**
+                // Hitung persentase ketercapaian
                 $cplData['persentase'] = number_format(($cplData['total_nilai'] / $nilaiMax) * 100, 2);
             } else {
                 $cplData['persentase'] = 0;
             }
         }
 
+        // Urutkan berdasarkan kode CPL (menggunakan pembanding untuk memastikan urutan yang benar)
+        ksort($capaianCpl);
+
+        // Format ulang kode CPL untuk memastikan format seperti CPL-01, CPL-02, dll
+        $capaianCpl = array_map(function ($cpl) {
+            $cpl['kode_cpl'] = 'CPL-' . str_pad(explode('-', $cpl['kode_cpl'])[1], 2, '0', STR_PAD_LEFT);
+            return $cpl;
+        }, $capaianCpl);
+
         return $capaianCpl;
     }
-
-
     private function getGrade($total)
     {
         if ($total >= 85) {

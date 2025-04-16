@@ -6,6 +6,7 @@
 <div class="bg-body-light">
     <div class="content content-full">
         <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Ketercapaian Mahasiswa</h1>
+<<<<<<< HEAD
         
         <div class="d-flex justify-content-between align-items-end mb-3">
             <form method="GET" action="{{ route('ketercapaian.show', $mahasiswa->id) }}" class="d-flex align-items-end gap-2">
@@ -24,6 +25,18 @@
             <!-- Container untuk tombol ekspor -->
             <div id="exportButtons"></div>
         </div>
+=======
+        <form method="GET" action="{{ route('ketercapaian.show', $mahasiswa->id) }}" class="mb-3">
+            <label for="semester">Semester:</label>
+            <select name="semester" id="semester" class="form-control w-auto d-inline mx-2">
+                <option value="">-- Semua Semester --</option>
+                @foreach($semesters as $smt)
+                    <option value="{{ $smt }}" {{ request('semester') == $smt ? 'selected' : '' }}>Semester {{ $smt }}</option>
+                @endforeach
+            </select>
+
+        </form>
+>>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
     </div>
 </div>
 
@@ -117,6 +130,7 @@
             </table>
         </div>
     </div>
+<<<<<<< HEAD
 @endsection
 
 @section('js_after')
@@ -147,4 +161,13 @@
             table.buttons().container().appendTo('#exportButtons');
         });
     </script>
+=======
+    <script>
+        document.getElementById('semester').addEventListener('change', function() {
+            this.form.submit();
+        });
+    </script>
+    
+    
+>>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
 @endsection
