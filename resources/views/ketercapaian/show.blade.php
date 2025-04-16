@@ -6,26 +6,6 @@
 <div class="bg-body-light">
     <div class="content content-full">
         <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Ketercapaian Mahasiswa</h1>
-<<<<<<< HEAD
-        
-        <div class="d-flex justify-content-between align-items-end mb-3">
-            <form method="GET" action="{{ route('ketercapaian.show', $mahasiswa->id) }}" class="d-flex align-items-end gap-2">
-                <div>
-                    <label for="semester">Pilih Semester:</label>
-                    <select name="semester" id="semester" class="form-control">
-                        <option value="">-- Semua Semester --</option>
-                        @foreach($semesters as $smt)
-                            <option value="{{ $smt }}" {{ request('semester') == $smt ? 'selected' : '' }}>Semester {{ $smt }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Filter</button>
-            </form>
-
-            <!-- Container untuk tombol ekspor -->
-            <div id="exportButtons"></div>
-        </div>
-=======
         <form method="GET" action="{{ route('ketercapaian.show', $mahasiswa->id) }}" class="mb-3">
             <label for="semester">Semester:</label>
             <select name="semester" id="semester" class="form-control w-auto d-inline mx-2">
@@ -36,7 +16,6 @@
             </select>
 
         </form>
->>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
     </div>
 </div>
 
@@ -130,44 +109,9 @@
             </table>
         </div>
     </div>
-<<<<<<< HEAD
-@endsection
-
-@section('js_after')
-    <script src="{{ asset('js/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-buttons/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-buttons-bs5/js/buttons.bootstrap5.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-buttons-jszip/jszip.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-buttons-pdfmake/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-buttons-pdfmake/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-buttons/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('js/plugins/datatables-buttons/buttons.html5.min.js') }}"></script>
-
-    <script>
-        document.getElementById('semester').addEventListener('change', function () {
-            this.form.submit();
-        });
-
-        $(document).ready(function () {
-            let table = $('table.js-dataTable-buttons').DataTable({
-                dom: 'Bfrtip',
-                buttons: ['copy', 'excel', 'pdf', 'print'],
-                paging: false,
-                ordering: false,
-                info: false
-            });
-
-            table.buttons().container().appendTo('#exportButtons');
-        });
-    </script>
-=======
     <script>
         document.getElementById('semester').addEventListener('change', function() {
             this.form.submit();
         });
     </script>
-    
-    
->>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
 @endsection
