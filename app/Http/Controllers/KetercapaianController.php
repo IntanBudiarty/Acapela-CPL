@@ -39,58 +39,20 @@ class KetercapaianController extends Controller
     }
 
 
-    public function show(Request $request, $id)
-<<<<<<< HEAD
-{
-    // Ambil semester dari request
-    $semester = request('semester');
-=======
+    public function show($id)
     {
         // Ambil data mahasiswa berdasarkan ID
         $mahasiswa = Mahasiswa::findOrFail($id);
->>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
-
-    // Ambil data mahasiswa berdasarkan ID
-    $mahasiswa = Mahasiswa::findOrFail($id);
 
     // Ambil data ketercapaian berdasarkan mahasiswa ID
     $ketercapaianQuery = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
         ->where('mahasiswa_id', $id);
 
-<<<<<<< HEAD
     // Jika semester dipilih, filter berdasarkan semester dari relasi mata kuliah
     if ($semester) {
         $ketercapaianQuery->whereHas('mataKuliah', function ($query) use ($semester) {
             $query->where('semester', $semester);
         });
-=======
-        // Hitung capaian CPL
-        $capaianCpl = $this->calculateCapaianCpl($id);
-
-        $semester = request('semester');
-
-        $nilaiQuery = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
-            ->where('mahasiswa_id', $id);
-
-        if ($semester) {
-            $nilaiQuery->whereHas('mataKuliah', function ($q) use ($semester) {
-                $q->where('semester', $semester);
-            });
-        }
-
-        $nilai = $nilaiQuery->get();
-
-        // Filter data menjadi per mata kuliah
-        $ketercapaian = $nilai->groupBy('mata_kuliah_id');
-
-        // Hitung capaian CPL
-        // $capaianCpl = $this->hitungCapaianCpl($nilai); // <- sesuaikan ini jika perlu
-
-        $semesters = MataKuliah::distinct()->pluck('semester');
-
-        // Kirim data ke view
-        return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl', 'semesters'));
->>>>>>> 5c2f0a009250804e08487ef8bb7d635dd0daef8a
     }
 
     $ketercapaian = $ketercapaianQuery->get()->groupBy('mata_kuliah_id');
@@ -114,18 +76,12 @@ class KetercapaianController extends Controller
             ];
         });
 
-    // Hitung capaian CPL (tanpa di-filter, jika mau difilter juga nanti bisa ditambahkan)
-    $capaianCpl = $this->calculateCapaianCpl($id, $semester); // Tambahkan semester opsional di fungsi
+        // Hitung capaian CPL
+        $capaianCpl = $this->calculateCapaianCpl($id);
 
-    return view('ketercapaian.show', compact(
-        'mahasiswa',
-        'ketercapaian',
-        'rentangNilai',
-        'capaianCpl',
-        'semester'
-    ));
-}
-
+        // Kirim data ke view
+        return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl'));
+    }
 
     public function calculateCapaianCpl($mahasiswaId)
     {
