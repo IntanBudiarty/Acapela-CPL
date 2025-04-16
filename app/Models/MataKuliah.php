@@ -78,4 +78,9 @@ class MataKuliah extends Model
     {
         return $this->hasMany(Nilai::class,  'mahasiswa_id', 'mata_kuliah_id', 'mata_kuliah_nilai');
     }
+    public function ketercapaian()
+    {
+        return $this->hasMany(Ketercapaian::class);
+    }
+
 }

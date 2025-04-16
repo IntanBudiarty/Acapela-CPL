@@ -108,38 +108,37 @@ class CPMKController extends Controller
         $kode_cpl = $request->input('kode_cpl');  // Ambil kode CPL dari form
         if ($kode_cpl) {
             $cpl = Cpl::where('kode_cpl', $kode_cpl)->first();
-           
+
         }
+        $cpl_id = $request->input('cpl_id');  // pakai langsung cpl_id
+
         // Cek jika mata kuliah dengan kode CPMK sudah ada
         $cek_ada = Cpmk::whereHas('mataKuliah', function ($query) use ($id_mk) {
             $query->where('mata_kuliah_id', $id_mk);
         })->where('kode_cpmk', $kode_cpmk)->exists();
-    
+
         if ($cek_ada) {
             return back()->with('error', 'Mata Kuliah Dengan Kode CPMK Yang Dimasukkan Sudah Ada!');
         }
-    
-        // Validasi input
+
         $rules = [
             'kode_cpl' => 'required|string',  // Validasi untuk kode cpl
             'kode_cpmk' => 'required|string',
             'nama_cpmk' => 'required|string',
             'mata_kuliah' => 'required|array|min:1'
         ];
-    
+
         $validator = Validator::make($request->all(), $rules);
-    
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-    
-        // Membuat objek Cpmk baru
+
         $cpmk = new Cpmk();
         $cpmk->kode_cpmk = $kode_cpmk;
         $cpmk->nama_cpmk = $request->input('nama_cpmk');
         $cpmk->save();
-    
-        // Menyimpan relasi many-to-many dengan MataKuliah
+
         $mataKuliahIds = $request->input('mata_kuliah');
         $cpmk->mataKuliah()->sync($mataKuliahIds); // Menyimpan hubungan many-to-many
     
@@ -152,9 +151,10 @@ class CPMKController extends Controller
                 $cpmk->save();
             }
         }
-    
+
         return redirect()->route('cpmk.index')->with('success', 'Data CPMK berhasil ditambahkan!');
-    }    
+    }
+   
 
     public function edit(Request $request, int $id)
     {
@@ -192,6 +192,7 @@ class CPMKController extends Controller
         // Menyimpan relasi many-to-many
         $mataKuliahIds = $request->input('mata_kuliah'); // Array of mata kuliah IDs
         $cpmk->mataKuliah()->sync($mataKuliahIds); // Sync relasi many-to-many
+        $cpmk->cpl_id = $request->input('cpl_id');
 
         return back()->with('success', 'Data Berhasil Diubah!');
     }

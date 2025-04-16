@@ -80,8 +80,8 @@
                             @foreach ($cpl as $item)
                                 <option value="{{ $item->kode_cpl }}">{{ $item->kode_cpl }}</option>
                             @endforeach
-                        </select>                        
-                        
+                        </select>  
+                                      
                         {{-- <div class="row justify-content-center py-sm-3 py-md-5"> --}}
                             <div class="form-group">
                                     <label class="form-label" for="mata_kuliah">Kode MK</label>
