@@ -39,7 +39,7 @@ class KetercapaianController extends Controller
     }
 
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         // Ambil data mahasiswa berdasarkan ID
         $mahasiswa = Mahasiswa::findOrFail($id);
@@ -65,8 +65,29 @@ class KetercapaianController extends Controller
         // Hitung capaian CPL
         $capaianCpl = $this->calculateCapaianCpl($id);
 
+        $semester = request('semester');
+
+        $nilaiQuery = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
+            ->where('mahasiswa_id', $id);
+
+        if ($semester) {
+            $nilaiQuery->whereHas('mataKuliah', function ($q) use ($semester) {
+                $q->where('semester', $semester);
+            });
+        }
+
+        $nilai = $nilaiQuery->get();
+
+        // Filter data menjadi per mata kuliah
+        $ketercapaian = $nilai->groupBy('mata_kuliah_id');
+
+        // Hitung capaian CPL
+        // $capaianCpl = $this->hitungCapaianCpl($nilai); // <- sesuaikan ini jika perlu
+
+        $semesters = MataKuliah::distinct()->pluck('semester');
+
         // Kirim data ke view
-        return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl'));
+        return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl', 'semesters'));
     }
 
     public function calculateCapaianCpl($mahasiswaId)

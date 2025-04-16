@@ -6,6 +6,16 @@
 <div class="bg-body-light">
     <div class="content content-full">
         <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Ketercapaian Mahasiswa</h1>
+        <form method="GET" action="{{ route('ketercapaian.show', $mahasiswa->id) }}" class="mb-3">
+            <label for="semester">Pilih Semester:</label>
+            <select name="semester" id="semester" class="form-control w-auto d-inline mx-2">
+                <option value="">-- Semua Semester --</option>
+                @foreach($semesters as $smt)
+                    <option value="{{ $smt }}" {{ request('semester') == $smt ? 'selected' : '' }}>Semester {{ $smt }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
     </div>
 </div>
 
@@ -99,6 +109,11 @@
             </table>
         </div>
     </div>
+    <script>
+        document.getElementById('semester').addEventListener('change', function() {
+            this.form.submit();
+        });
+    </script>
     
     
 @endsection
