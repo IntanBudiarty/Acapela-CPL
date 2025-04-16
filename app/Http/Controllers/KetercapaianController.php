@@ -97,7 +97,7 @@ class KetercapaianController extends Controller
             ->where('mahasiswa_id', $mahasiswaId)
             ->get();
 
-        // **Ambil total skor maksimal per CPL dengan menjumlahkan seluruh skor_maksimal dari CPMK terkait**
+        // Ambil total skor maksimal per CPL dengan menjumlahkan seluruh skor_maksimal dari CPMK terkait
         $rumusanAkhirCpl = DB::table('rumusan_akhir_cpl')
             ->select('kd_cpl', DB::raw('SUM(skor_maksimal) as total_skor_maksimal'))
             ->groupBy('kd_cpl')
@@ -131,22 +131,29 @@ class KetercapaianController extends Controller
             }
         }
 
-        // **Hitung persentase ketercapaian berdasarkan total skor maksimal dari `rumusanAkhirCpl`**
+        // *Hitung persentase ketercapaian berdasarkan total skor maksimal dari rumusanAkhirCpl*
         foreach ($capaianCpl as $kodeCpl => &$cplData) {
             $nilaiMax = $cplData['total_skor_maksimal']; // Gunakan total skor maksimal yang benar
 
             if ($nilaiMax > 0) {
-                // **Hitung persentase ketercapaian**
+                // Hitung persentase ketercapaian
                 $cplData['persentase'] = number_format(($cplData['total_nilai'] / $nilaiMax) * 100, 2);
             } else {
                 $cplData['persentase'] = 0;
             }
         }
 
+        // Urutkan berdasarkan kode CPL (menggunakan pembanding untuk memastikan urutan yang benar)
+        ksort($capaianCpl);
+
+        // Format ulang kode CPL untuk memastikan format seperti CPL-01, CPL-02, dll
+        $capaianCpl = array_map(function ($cpl) {
+            $cpl['kode_cpl'] = 'CPL-' . str_pad(explode('-', $cpl['kode_cpl'])[1], 2, '0', STR_PAD_LEFT);
+            return $cpl;
+        }, $capaianCpl);
+
         return $capaianCpl;
     }
-
-
     private function getGrade($total)
     {
         if ($total >= 85) {
