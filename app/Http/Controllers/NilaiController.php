@@ -83,8 +83,14 @@ class NilaiController extends Controller
 
         foreach ($request->nilai as $mahasiswaId => $rumusans) {
             $totalNilai = 0;
-
+        
             foreach ($rumusans as $rumusanAkhirMkId => $nilai) {
+                $rumusan = \App\Models\RumusanAkhirMk::findOrFail($rumusanAkhirMkId);
+        
+                if ($nilai > $rumusan->skor_maksimal) {
+                    return back()->withErrors(['Nilai tidak boleh melebihi skor maksimal CPMK.'])->withInput();
+                }
+        
                 Nilai::updateOrCreate(
                     [
                         'mahasiswa_id' => $mahasiswaId,
@@ -93,15 +99,14 @@ class NilaiController extends Controller
                     ],
                     ['nilai' => $nilai]
                 );
-
-                $totalNilai += $nilai; // Hitung total nilai
+        
+                $totalNilai += $nilai;
             }
-
-            // Update total nilai
+        
             Nilai::where('mahasiswa_id', $mahasiswaId)
                 ->where('mata_kuliah_id', $mataKuliahId)
                 ->update(['total' => $totalNilai]);
-        }
+        }        
 
         return redirect()->route('nilai.index')->with('success', 'Nilai berhasil diperbarui.');
     }

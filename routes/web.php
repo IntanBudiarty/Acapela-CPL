@@ -139,29 +139,15 @@ Route::group(['middleware' => 'auth'], function () {
         //rumusanAkhirCpl
         Route::get('rumusanAkhirCpl', [RumusaAkhirCplController::class, 'index'])->name('rumusanAkhirCpl.index');
         Route::get('/import-rumusan-akhir-cpl', [RumusaAkhirCplController::class, 'importDataFromRumusanAkhirMk'])->name('importRumusanAkhirCpl');
-        // Route::get('rumusanAkhirCpl/cari', [RumusanAkhirCpl::class, 'cari'])->name('bcplcari');
-        // Route::post('tambah-bcpl', [RumusanAkhirCpl::class, 'store']);
-        // Route::get('get-bcpl', [RumusanAkhirCpl::class, 'get']);
-        // Route::get('cek-teknik', [RumusanAkhirCpl::class, 'cekTeknik']);
-        // Route::post('edit-bcpl', [RumusanAkhirCpl::class, 'edit']);
-        // Route::post('hapus-bcpl', [RumusanAkhirCpl::class, 'hapus']);
-        // Route::get('/rumusan-akhir-cpl', [RumusanAkhirCpl::class, 'index'])->name('bcpl.index');
+        
     });
     Route::group(['middleware' => ['role:admin|dosen']], function () {
 
         // Ketercapaian CPMK 
         Route::get('/ketercapaian', [KetercapaianController::class, 'index'])->name('ketercapaian.index');
         Route::get('ketercapaian/{id}', [KetercapaianController::class, 'show'])->name('ketercapaian.show');
-        // Route::get('ketercapaian', [KetercapaianController::class, 'index'])->name('ketercapaian');
-
-        // Route::get('ketercapaian/cari', [KetercapaianController::class, 'cari'])->name('ketercapaiancari');
-        // Route::get('ketercapaian-cetak', [KetercapaianController::class, 'downloadPDF'])->name('ketercapaian-cetak');
-        // // Ketercapaian CPL
-        // Route::get('kcpl', [KcplController::class, 'index'])->name('kcpl');
-        // Route::get('kcpl/cari', [KcplController::class, 'cari'])->name('kcplcari');
-        // Route::get('kcpl-cetak', [KcplController::class, 'downloadPDF'])->name('kcpl-cetak');
-        // Route::post('edit-kolom-cpl', [KcplController::class, 'editkolom'])->name('kcpl.editkolom');
-        // Route::post('/kcpl', [KcplController::class, 'store'])->name('kcpl.store');
+        Route::get('/ketercapaian/{id}/cpl', [KetercapaianController::class, 'capaianCpl'])->name('ketercapaian.capaian-cpl');
+        // Route::get('/ketercapaian/{id}/cpl', [KetercapaianController::class, 'capaianCpl'])->name('ketercapaian.cpl');
 
         // DPNA
         Route::get('dpna', [DpnaController::class, 'index'])->name('dpna');
@@ -175,11 +161,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/nilai/{mahasiswa}/update', [NilaiController::class, 'update'])->name('nilai.update');
         Route::post('/nilai/update', [NilaiController::class, 'updateNilai'])->name('nilai.update');
         Route::post('/nilai/update', [NilaiController::class, 'updateNilai'])->name('nilai.updateNilai');
-
-
-        // //mata kuliah dosen pengampu
-        // Route::get('dosen', [DosenMataKuliahController::class, 'index'])->name('dosen.mata_kuliah');
-        // Route::get('/dosen/{id}/mata-kuliah', [DosenMataKuliahController::class, 'index'])->name('dosen.mata_kuliah');
 
     });
     Route::get('home', [HomeController::class, 'index'])->name('home');

@@ -25,9 +25,9 @@ class Nilai extends Model
         return $this->belongsTo(Mahasiswa::class, 'mahasiswa_id');
     }
     public function mataKuliah()
-{
-    return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
-}
+    {
+        return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
+    }
 
     public function rumusanAkhirMk()
     {

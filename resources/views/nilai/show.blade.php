@@ -99,6 +99,7 @@
                                                 value="{{ old('nilai.' . $mahasiswa->id . '.' . $rumusan->id, $existingNilai) }}" 
                                                 data-nim="{{ $mahasiswa->nim }}" 
                                                 data-total-id="total-{{ $mahasiswa->nim }}"
+                                                max="{{ $rumusan->skor_maksimal }}"
                                                 required>
                                         </td>
                                         @if ($loop->last)
@@ -124,4 +125,19 @@
         </div>
     </div>
 </div>
-@endsection
+@push('scripts')
+<script>
+    document.querySelectorAll('.nilai-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const max = parseFloat(this.getAttribute('max'));
+            const value = parseFloat(this.value);
+            if (value > max) {
+                this.value = max;
+            }
+            if (value < 0) {
+                this.value = 0;
+            }
+        });
+    });
+</script>
+@endpush

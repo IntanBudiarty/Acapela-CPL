@@ -367,8 +367,9 @@
 
 <!-- Laravel Original JS -->
 <!-- <script src="{{ mix('/js/laravel.app.js') }}"></script> -->
-
+@stack('scripts')
 @yield('js_after')
+
 </body>
 
 </html>

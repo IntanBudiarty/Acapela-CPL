@@ -16,6 +16,10 @@
             </select>
 
         </form>
+        <a href="{{ route('ketercapaian.capaian-cpl', $mahasiswa->id) }}" class="btn btn-primary btn-sm">
+            <i class="fa fa-eye"></i> Cetak CPL
+          </a>
+          
     </div>
 </div>
 
@@ -91,18 +95,22 @@
                 <thead>
                     <tr>
                         <th>Kode CPL</th>
+                        <th>Deskripsi CPL</th>
                         <th>Total Nilai</th>
                         <th>Total Skor Maksimal</th>
                         <th>Persentase Ketercapaian</th>
+                        <th>Predikat</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($capaianCpl as $item)
                         <tr>
                             <td>{{ $item['kode_cpl'] }}</td>
+                            <td>{{ $item['nama_cpl'] }}</td>
                             <td>{{ $item['total_nilai'] }}</td>
                             <td>{{ $item['total_skor_maksimal'] ?? '-' }}</td>
                             <td>{{ $item['persentase'] }}%</td>
+                            <td>{{ $item['predikat'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
