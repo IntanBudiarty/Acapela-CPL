@@ -37,6 +37,7 @@ class KetercapaianController extends Controller
             'selectedAngkatan' => $angkatan
         ]);
     }
+
     public function capaianCpl($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
