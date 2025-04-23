@@ -1,4 +1,4 @@
-
+@extends('layouts.backend')
 @section('content')
 <div class="container">
     <h3>Capaian CPL Mahasiswa: {{ $mahasiswa->nama }}</h3>
