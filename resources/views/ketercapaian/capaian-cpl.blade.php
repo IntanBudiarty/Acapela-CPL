@@ -19,30 +19,30 @@
         {{-- Data Mahasiswa --}}
         <div class="row">
             <div class="col">
-                <table class="table table-bordered" style="font-size: 12px">
+                <table class="table table-borderless" style="font-size: 12px;">
                     <tr>
-                        <td><strong>Nama Mahasiswa:</strong></td>
-                        <td>{{ $mahasiswa->nama }}</td>
+                        <td style="padding: 4px;"><strong>Nama Mahasiswa:</strong></td>
+                        <td style="padding: 4px;">{{ $mahasiswa->nama }}</td>
                     </tr>
                     <tr>
-                        <td><strong>NIM:</strong></td>
-                        <td>{{ $mahasiswa->nim }}</td>
+                        <td style="padding: 4px;"><strong>NIM:</strong></td>
+                        <td style="padding: 4px;">{{ $mahasiswa->nim }}</td>
                     </tr>
                     <tr>
-                        <td><strong>Angkatan:</strong></td>
-                        <td>{{ $mahasiswa->angkatan }}</td>
+                        <td style="padding: 4px;"><strong>Angkatan:</strong></td>
+                        <td style="padding: 4px;">{{ $mahasiswa->angkatan }}</td>
                     </tr>
-                </table>
+                </table>                
             </div>
             <div class="col">
-                <table class="table table-bordered" style="font-size: 12px">
+                <table class="table table-borderless" style="font-size: 12px">
                     <tr>
-                        <td><strong>Fakultas:</strong></td>
-                        <td>TEKNIK</td>
+                        <td style="padding: 4px"><strong>Fakultas:</strong></td>
+                        <td style="padding: 4px">TEKNIK</td>
                     </tr>
                     <tr>
-                        <td><strong>Program Studi:</strong></td>
-                        <td>SISTEM INFORMASI</td>
+                        <td style="padding: 4px"><strong>Program Studi:</strong></td>
+                        <td style="padding: 4px">SISTEM INFORMASI</td>
                     </tr>
                 </table>
             </div>
@@ -77,10 +77,13 @@
         </div>
 
         <div style="margin-left: 80px; text-align: end; font-size: 12px;">
-            <p>Mengetahui,</p>
-            <p>Kepala Program Studi Sistem Informasi</p>
-            <br><br><br>
-            <p style="font-weight: bold; text-decoration: underline;">Dr.Endina Putri Purwandari S.T.,M.KOM</p>
+            <div style="margin-left: 80px; text-align: end;">
+                <p style="margin-bottom: 5px;">Mengetahui,</p>
+                <p style="margin-bottom: 5px;">Kepala Program Studi Sistem Informasi</p>
+                <br><br><br>
+                <p style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">Dr. Endina Putri Purwandari S.T., M.Kom</p>
+                <p style="margin-top: 0;">NIP. 19870127 201212 2 001</p>
+            </div>            
         </div>
     </div>
 </div>
