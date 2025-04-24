@@ -153,7 +153,6 @@ class CPMKController extends Controller
         }
 
         $rules = [
-            'kode_cpl' => 'required|string',
             'kode_cpmk' => 'required|string',
             'nama_cpmk' => 'required|string',
             'mata_kuliah' => 'required|array|min:1',
