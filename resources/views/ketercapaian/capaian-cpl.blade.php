@@ -19,7 +19,7 @@
         {{-- Data Mahasiswa --}}
         <div class="row">
             <div class="col">
-                <table class="table table-bordered">
+                <table class="table table-bordered" style="font-size: 12px">
                     <tr>
                         <td><strong>Nama Mahasiswa:</strong></td>
                         <td>{{ $mahasiswa->nama }}</td>
@@ -35,7 +35,7 @@
                 </table>
             </div>
             <div class="col">
-                <table class="table table-bordered">
+                <table class="table table-bordered" style="font-size: 12px">
                     <tr>
                         <td><strong>Fakultas:</strong></td>
                         <td>TEKNIK</td>
@@ -64,19 +64,19 @@
                 <tbody>
                     @foreach($capaianCpl as $cpl)
                         <tr>
-                            <td>{{ $cpl['kode_cpl'] }}</td>
-                            <td>{{ $cpl['nama_cpl'] }}</td>
-                            <td>{{ $cpl['total_nilai'] }}</td>
-                            <td>{{ $cpl['total_skor_maksimal'] }}</td>
-                            <td>{{ $cpl['persentase'] }}%</td>
-                            <td>{{ $cpl['predikat'] }}</td>
+                            <td style="font-size: 12px">{{ $cpl['kode_cpl'] }}</td>
+                            <td style="font-size: 12px">{{ $cpl['nama_cpl'] }}</td>
+                            <td style="font-size: 12px">{{ $cpl['total_nilai'] }}</td>
+                            <td style="font-size: 12px">{{ $cpl['total_skor_maksimal'] }}</td>
+                            <td style="font-size: 12px">{{ $cpl['persentase'] }}%</td>
+                            <td style="font-size: 12px">{{ $cpl['predikat'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
 
-        <div style="margin-left: 80px; text-align: end;">
+        <div style="margin-left: 80px; text-align: end; font-size: 12px;">
             <p>Mengetahui,</p>
             <p>Kepala Program Studi Sistem Informasi</p>
             <br><br><br>
