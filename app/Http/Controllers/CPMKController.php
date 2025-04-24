@@ -16,7 +16,6 @@ class CPMKController extends Controller
 {
     public function import(Request $request)
     {
-        // Validasi file yang diunggah
         $request->validate([
             'file' => 'required|mimes:xlsx,xls|max:2048',
         ]);
@@ -24,25 +23,19 @@ class CPMKController extends Controller
         $file = $request->file('file');
 
         try {
-            // Proses impor file
-            // Excel::import(new ImportMahasiswa, $request->file('file'));
             Excel::import(new CpmkImport, $file->getRealPath());
             return redirect()->route('cpmk')->with('success', 'Data berhasil diimport.');
         } catch (\Exception $e) {
-            // Tangani kesalahan
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+
     public function index()
     {
-        // Nilai tetap
         $judul = 'Pemetaan CPL-CPMK-MK';
         $parent = 'CPMK';
 
-        // Ambil data CPMK dengan relasi CPL dan Mata Kuliah
         $tampil = Cpmk::with(['mataKuliah', 'cpl'])->get();
-
-        // Ambil data CPL dengan relasi CPMK dan Mata Kuliah
         $cpls = Cpl::with(['cpmks.mataKuliah'])->get();
 
         return view('cpmk.index', [
@@ -53,10 +46,8 @@ class CPMKController extends Controller
         ]);
     }
 
-
     public function tambahindex()
     {
-        // Nilai tetap
         $judul = 'Tambah CPMK';
         $judulform = 'Form Tambah CPMK';
         $parent = 'CPMK';
@@ -66,7 +57,7 @@ class CPMKController extends Controller
         $cpls = Cpl::all();
 
         return view('cpmk.tambah', [
-            'cpl'=>$cpls,
+            'cpl' => $cpls,
             'mk' => $mk,
             'judul' => $judul,
             'judulform' => $judulform,
@@ -77,13 +68,13 @@ class CPMKController extends Controller
 
     public function editindex(int $id)
     {
-        // Nilai tetap
         $judul = 'Edit CPMK';
         $parent = 'CPMK';
         $subparent = 'Edit';
 
         $mk = MataKuliah::all();
         $cpmk = Cpmk::with('mataKuliah')->findOrFail($id);
+        $cpl = Cpl::all();
 
         return view('cpmk.edit', [
             'judul' => $judul,
@@ -91,13 +82,13 @@ class CPMKController extends Controller
             'subparent' => $subparent,
             'cpmk' => $cpmk,
             'mk' => $mk,
+            'cpls' => $cpl
         ]);
     }
+
     public function showCplData()
     {
-        // Mengambil data CPL beserta CPMK dan Matakuliah yang terkait
         $cpls = Cpl::with('cpmks')->get();
-
         return view('cpl.index', compact('cpls'));
     }
 
@@ -105,24 +96,21 @@ class CPMKController extends Controller
     {
         $id_mk = $request->input('mata_kuliah');
         $kode_cpmk = $request->input('kode_cpmk');
-        $kode_cpl = $request->input('kode_cpl');  // Ambil kode CPL dari form
+        $kode_cpl = $request->input('kode_cpl');
+
         if ($kode_cpl) {
             $cpl = Cpl::where('kode_cpl', $kode_cpl)->first();
-
         }
-        $cpl_id = $request->input('cpl_id');  // pakai langsung cpl_id
 
-        // Cek jika mata kuliah dengan kode CPMK sudah ada
-        $cek_ada = Cpmk::whereHas('mataKuliah', function ($query) use ($id_mk) {
-            $query->where('mata_kuliah_id', $id_mk);
-        })->where('kode_cpmk', $kode_cpmk)->exists();
+        $cpl_id = $request->input('cpl_id');
 
-        if ($cek_ada) {
-            return back()->with('error', 'Mata Kuliah Dengan Kode CPMK Yang Dimasukkan Sudah Ada!');
+        // Cek jika kode CPMK sudah ada secara global
+        if (Cpmk::where('kode_cpmk', $kode_cpmk)->exists()) {
+            return back()->with('error', 'Kode CPMK yang diinputkan sudah ada!');
         }
 
         $rules = [
-            'kode_cpl' => 'required|string',  // Validasi untuk kode cpl
+            'kode_cpl' => 'required|string',
             'kode_cpmk' => 'required|string',
             'nama_cpmk' => 'required|string',
             'mata_kuliah' => 'required|array|min:1'
@@ -140,13 +128,11 @@ class CPMKController extends Controller
         $cpmk->save();
 
         $mataKuliahIds = $request->input('mata_kuliah');
-        $cpmk->mataKuliah()->sync($mataKuliahIds); // Menyimpan hubungan many-to-many
-    
-        // Mengaitkan CPL ke CPMK
+        $cpmk->mataKuliah()->sync($mataKuliahIds);
+
         if ($kode_cpl) {
             $cpl = Cpl::where('kode_cpl', $kode_cpl)->first();
             if ($cpl) {
-                // Menyimpan cpl_id ke dalam tabel cpmk
                 $cpmk->cpl_id = $cpl->id;
                 $cpmk->save();
             }
@@ -154,24 +140,20 @@ class CPMKController extends Controller
 
         return redirect()->route('cpmk.index')->with('success', 'Data CPMK berhasil ditambahkan!');
     }
-   
 
     public function edit(Request $request, int $id)
     {
         $id_mk = $request->input('mata_kuliah');
         $kode_cpmk = $request->input('kode_cpmk');
 
-        // Cek jika mata kuliah dengan kode CPMK sudah ada
-        $cek_ada = Cpmk::whereHas('mataKuliah', function ($query) use ($id_mk) {
+        if (Cpmk::whereHas('mataKuliah', function ($query) use ($id_mk) {
             $query->where('mata_kuliah_id', $id_mk);
-        })->where('kode_cpmk', $kode_cpmk)->exists();
-
-        if ($cek_ada) {
+        })->where('kode_cpmk', $kode_cpmk)->exists()) {
             return back()->with('error', 'Mata Kuliah Dengan Kode CPMK Yang Dimasukkan Sudah Ada!');
         }
 
         $rules = [
-            'Kode_cpl' => 'required|string',
+            'kode_cpl' => 'required|string',
             'kode_cpmk' => 'required|string',
             'nama_cpmk' => 'required|string',
             'mata_kuliah' => 'required|array|min:1',
@@ -184,24 +166,22 @@ class CPMKController extends Controller
         }
 
         $cpmk = Cpmk::findOrFail($id);
-        $cpmk->code_cpl = $request->input('kode_cpl');
         $cpmk->kode_cpmk = $request->input('kode_cpmk');
         $cpmk->nama_cpmk = $request->input('nama_cpmk');
+        $cpmk->cpl_id = $request->input('cpl_id');
         $cpmk->save();
 
-        // Menyimpan relasi many-to-many
-        $mataKuliahIds = $request->input('mata_kuliah'); // Array of mata kuliah IDs
-        $cpmk->mataKuliah()->sync($mataKuliahIds); // Sync relasi many-to-many
-        $cpmk->cpl_id = $request->input('cpl_id');
+        $mataKuliahIds = $request->input('mata_kuliah');
+        $cpmk->mataKuliah()->sync($mataKuliahIds);
 
         return back()->with('success', 'Data Berhasil Diubah!');
     }
+
     public function hapus($id)
     {
         try {
             $cpmk = Cpmk::findOrFail($id);
             $cpmk->delete();
-
             return redirect()->back()->with('success', 'Data berhasil dihapus');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

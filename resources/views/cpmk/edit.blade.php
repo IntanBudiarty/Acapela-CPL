@@ -65,35 +65,44 @@
                                 {{ Session::get('error') }}
                             </div>
                         @endif
-                            <div class="row justify-content-center py-sm-3 py-md-5">
-                            <div class="col-lg-10 col-lg-8">
-                                <div class="mb-4">
-                                    <label class="form-label" for="mata_kuliah">Kode MK</label>
-                                    <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah">
-                                        @foreach($mk as $t)
-                                            <option value="{{ $t->id }}">{{ $t->kode }}</option>
-                                        @endforeach
-                                    </select>
+                        <div class="form-group">
+                                <label class="form-label" for="mata_kuliah">Kode MK</label>
+                                <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah" multiple>
+                                    @foreach($mk as $t)
+                                        <option value="{{ $t->id }}">{{ $t->kode }}</option>
+                                    @endforeach
+                                </select>
+                            </div>                                                
                             
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label" for="kode_cpl">Kode CPL</label>
-                                    <input type="text" id="kode_cpl" name="kode_cpl" value="{{ old('kode_cpl', $cpmk->code_cpl) }}" class="form-control" required placeholder="Kode CPl">
-                                </div>                                
-                                <div class="mb-4">
-                                            <label class="form-label" for="kode_cpmk">Kode CPMK</label>
-                                            <input name="kode_cpmk-ori" type="hidden" value="{{ $cpmk->kode_cpmk }}">
-                                            <input type="text" id="kode_cpmk" name="kode_cpmk" class="form-control"
-                                                value="{{ $cpmk->kode_cpmk }}"
-                                                required placeholder="Kode">
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label" for="nama_cpmk">Nama CPMK</label>
-                                            <input type="text" id="nama_cpmk" name="nama_cpmk" value="{{ $cpmk->nama_cpmk }}"
-                                                class="form-control" required placeholder="Nama">
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="mb-4">
+                                <label class="form-label" for="kode_cpl">Kode CPL</label>
+                                <select name="kode_cpl" id="kode_cpl" class="form-select">
+                                    @foreach ($cpls as $cpl)
+                                        <option value="{{$cpl->id}}" {{ $cpmk->cpl_id == $cpl->id ? 'selected' : '' }}>{{$cpl->kode_cpl}}</option>
+                                    @endforeach
+                                </select>
+                                
+                                {{-- <input type="text" id="kode_cpl" name="kode_cpl" 
+                                value="{{ old('kode_cpl', $cpmk->cpl ? $cpmk->cpl->kode_cpl : '') }}" 
+                                class="form-control" required placeholder="Kode CPL"> --}}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label" for="kode_cpmk">Kode CPMK</label>
+                                <input name="kode_cpmk-ori" type="hidden" value="{{ $cpmk->kode_cpmk }}">
+                                <input type="text" id="kode_cpmk" name="kode_cpmk" class="form-control"
+                                value="{{ old('kode_cpmk', $cpmk->kode_cpmk) }}"
+                                required placeholder="Kode">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label" for="nama_cpmk">Nama CPMK</label>
+                                <input type="text" id="nama_cpmk" name="nama_cpmk" 
+                                value="{{ old('nama_cpmk', $cpmk->nama_cpmk) }}"
+                                class="form-control" required placeholder="Nama">
+                            </div>
+                        </div>
+                                
                     </div>
                 </div>
             </form>
@@ -101,6 +110,4 @@
         <!-- END Your Block -->
     </div>
     <!-- END Page Content -->
-
-    <!-- Inline CSS untuk hilangkan scroll dropdown -->
 @endsection
