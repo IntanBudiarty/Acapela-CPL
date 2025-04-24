@@ -6,12 +6,12 @@
         {{-- Kop Surat --}}
         <div class="row align-items-center mb-4">
             <div class="col-2 text-center">
-                <img src="{{ asset('media/photos/ketercapaian/Logo-unib.png') }}" alt="Logo UNIB" width="100" height="100">
+                <img src="{{ asset('media/photos/ketercapaian/Logo-unib.png') }}" alt="Logo UNIB" width="75" height="75">
             </div>
             <div class="col-10 text-right">
                 <h4 style="margin:0;">UNIVERSITAS BENGKULU</h4>
                 <h6 style="margin:0;">FAKULTAS TEKNIK</h6>
-                <h6 style="margin:0;">PROGRAM STUDI SISTEM INFORMASI</h6>
+                <h6 style="margin:0; font-size: 12px">PROGRAM STUDI SISTEM INFORMASI</h6>
                 {{-- <hr style="border: 1px solid #000;"> --}}
             </div>
         </div>
@@ -49,7 +49,7 @@
         </div>
 
         {{-- Tabel CPL --}}
-        <div class="mt-4">
+        <div class="mt-1">
             <table class="table table-bordered">
                 <thead>
                     <tr>
