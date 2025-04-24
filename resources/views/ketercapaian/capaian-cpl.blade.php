@@ -53,12 +53,12 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Kode CPL</th>
-                        <th>Nama CPL</th>
-                        <th>Total Nilai</th>
-                        <th>Total Skor Maksimal</th>
-                        <th>Persentase (%)</th>
-                        <th>Predikat</th>
+                        <th style="font-size: 11px;">Kode CPL</th>
+                        <th style="font-size: 11px;">Nama CPL</th>
+                        <th style="font-size: 11px;">Total Nilai</th>
+                        <th style="font-size: 11px;">Total Skor Maksimal</th>
+                        <th style="font-size: 11px;">Persentase (%)</th>
+                        <th style="font-size: 11px;">Predikat</th>
                     </tr>
                 </thead>
                 <tbody>
