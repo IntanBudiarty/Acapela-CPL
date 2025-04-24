@@ -69,15 +69,16 @@
                             <div class="col-lg-10 col-lg-8">
                                 <div class="mb-4">
                                     <label class="form-label" for="mata_kuliah">Kode MK</label>
-                                    <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah" multiple>
+                                    <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah">
                                         @foreach($mk as $t)
                                             <option value="{{ $t->id }}">{{ $t->kode }}</option>
                                         @endforeach
                                     </select>
+                            
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label" for="kode_cpl">Code CPL</label>
-                                    <input type="text" id="kode_cpl" name="kode_cpl" value="{{ old('kode_cpl', $cpmk->code_cpl) }}" class="form-control" required placeholder="Kode_CPl">
+                                    <label class="form-label" for="kode_cpl">Kode CPL</label>
+                                    <input type="text" id="kode_cpl" name="kode_cpl" value="{{ old('kode_cpl', $cpmk->code_cpl) }}" class="form-control" required placeholder="Kode CPl">
                                 </div>                                
                                 <div class="mb-4">
                                             <label class="form-label" for="kode_cpmk">Kode CPMK</label>
@@ -100,4 +101,22 @@
         <!-- END Your Block -->
     </div>
     <!-- END Page Content -->
+
+    <!-- Inline CSS untuk hilangkan scroll dropdown -->
+<style>
+    .select2-container .select2-dropdown.no-scroll {
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+</style>
+
+<!-- Inline JS untuk inisialisasi Select2 -->
+<script>
+    $(document).ready(function() {
+        $('#mata_kuliah').select2({
+            dropdownCssClass: 'no-scroll',
+            width: '100%'
+        });
+    });
+</script>
 @endsection
