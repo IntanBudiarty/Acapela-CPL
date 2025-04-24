@@ -75,8 +75,9 @@
                                 {{ Session::get('error') }}
                             </div>
                         @endif
-                        <select name="kode_cpl" class="form-control">
-                            <option value="">Pilih CPL</option>
+                        <label class="form-label" for="kode_cpl">Pilih CPL</label>
+                        <select name="kode_cpl" class="form-control" id="kode_cpl">
+                            <option value="">Kode CPL</option>
                             @foreach ($cpl as $item)
                                 <option value="{{ $item->kode_cpl }}">{{ $item->kode_cpl }}</option>
                             @endforeach
