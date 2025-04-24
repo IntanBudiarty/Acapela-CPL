@@ -84,4 +84,9 @@
         </div>
     </div>
 </div>
+<script>
+    window.onload = function() {
+        window.print();
+    }
+</script>
 @endsection
