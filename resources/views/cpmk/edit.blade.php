@@ -103,20 +103,4 @@
     <!-- END Page Content -->
 
     <!-- Inline CSS untuk hilangkan scroll dropdown -->
-<style>
-    .select2-container .select2-dropdown.no-scroll {
-        max-height: none !important;
-        overflow-y: visible !important;
-    }
-</style>
-
-<!-- Inline JS untuk inisialisasi Select2 -->
-<script>
-    $(document).ready(function() {
-        $('#mata_kuliah').select2({
-            dropdownCssClass: 'no-scroll',
-            width: '100%'
-        });
-    });
-</script>
 @endsection
