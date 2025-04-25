@@ -69,7 +69,7 @@
                             <div class="col-lg-10 col-lg-8">
                                 <div class="mb-4">
                                     <label class="form-label" for="mata_kuliah">Kode MK</label>
-                                    <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah">
+                                    <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah" multiple>
                                         @foreach($mk as $t)
                                             <option value="{{ $t->id }}">{{ $t->kode }}</option>
                                         @endforeach
@@ -78,7 +78,11 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label" for="kode_cpl">Kode CPL</label>
-                                    <input type="text" id="kode_cpl" name="kode_cpl" value="{{ old('kode_cpl', $cpmk->code_cpl) }}" class="form-control" required placeholder="Kode CPl">
+                                    <select class="form-select" name="cpl_id" id="kode_cpl">
+                                        @foreach ($cpls as $cpl)
+                                            <option value="{{$cpl->id}}">{{$cpl->kode_cpl}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>                                
                                 <div class="mb-4">
                                             <label class="form-label" for="kode_cpmk">Kode CPMK</label>

@@ -84,6 +84,7 @@ class CPMKController extends Controller
 
         $mk = MataKuliah::all();
         $cpmk = Cpmk::with('mataKuliah')->findOrFail($id);
+        $cpl = Cpl::all();
 
         return view('cpmk.edit', [
             'judul' => $judul,
@@ -91,6 +92,7 @@ class CPMKController extends Controller
             'subparent' => $subparent,
             'cpmk' => $cpmk,
             'mk' => $mk,
+            'cpls' => $cpl
         ]);
     }
     public function showCplData()

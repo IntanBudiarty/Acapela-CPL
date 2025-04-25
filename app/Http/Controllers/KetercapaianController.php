@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Ketercapaian;
 use App\Models\Cpl;
-use App\Models\Mahasiswa;
-use App\Models\MataKuliah;
 use App\Models\Nilai;
+use App\Models\Mahasiswa;
+use App\Models\DosenAdmin;
+use App\Models\MataKuliah;
+use App\Models\Ketercapaian;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
 class KetercapaianController extends Controller
@@ -41,10 +43,11 @@ class KetercapaianController extends Controller
     public function capaianCpl($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
+        $kaprodi = DosenAdmin::where('jabatan', 'kaprodi')->first();
 
         $capaianCpl = $this->calculateCapaianCpl($id); // panggil method calculateCapaianCpl yang udah kamu bikin tadi
 
-        return view('ketercapaian.capaian-cpl', compact('mahasiswa', 'capaianCpl'));
+        return view('ketercapaian.capaian-cpl', compact('mahasiswa', 'capaianCpl', 'kaprodi'));
     }
 
     public function show($id)

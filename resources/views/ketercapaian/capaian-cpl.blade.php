@@ -81,8 +81,8 @@
                 <p style="margin-bottom: 5px;">Mengetahui,</p>
                 <p style="margin-bottom: 5px;">Kepala Program Studi Sistem Informasi</p>
                 <br><br><br>
-                <p style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">Dr. Endina Putri Purwandari S.T., M.Kom</p>
-                <p style="margin-top: 0;">NIP. 19870127 201212 2 001</p>
+                <p style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">{{ $kaprodi?->nama ?? "Kaprodi Tidak Di Temukan" }}</p>
+                <p style="margin-top: 0;">NIP. {{ $kaprodi?->nip ?? "NIP Tidak Di Temukan"}}</p>
             </div>            
         </div>
     </div>

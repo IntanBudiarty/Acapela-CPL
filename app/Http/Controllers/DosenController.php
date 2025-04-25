@@ -66,6 +66,7 @@ class DosenController extends Controller
             'nama' => 'required|string',
             'username' => 'required|string|unique:users',
             'password' => 'required|string',
+            'jabatan' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -85,6 +86,7 @@ class DosenController extends Controller
         $dosenadmin = new DosenAdmin;
         $dosenadmin->nip = $request->input('nip');
         $dosenadmin->nama = $request->input('nama');
+        $dosenadmin->jabatan = $request->input('jabatan');
         $dosenadmin->user()->associate($user);
         $dosenadmin->save();
 
@@ -100,6 +102,7 @@ class DosenController extends Controller
             'nama' => 'required|string',
             'username' => 'required|string|unique:users,username,' . $data->user->id,
             'password' => 'required|string',
+            'jabatan' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -112,6 +115,7 @@ class DosenController extends Controller
         $data->nama = $request->input('nama');
         $data->user->username = $request->input('username');
         $data->user->nip = $request->input('nip');
+        $data->jabatan = $request->input('jabatan');
         if ($data->user->password !== $request->input('password')) {
             $data->user->password = bcrypt($request->input('password'));
         }

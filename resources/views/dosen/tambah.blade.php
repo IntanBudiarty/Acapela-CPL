@@ -103,6 +103,13 @@
                                            name="password"
                                            placeholder="Masukkan Password..." required>
                                 </div>
+                                <div class="mb-4">
+                                    <label class="form-label" for="jabatan">Jabatan</label>
+                                    <select class="form-select" name="jabatan" id="jabatan">
+                                        <option value="kaprodi">Kaprodi</option>
+                                        <option value="dosen">Dosen</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
