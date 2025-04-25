@@ -59,14 +59,7 @@
                 </div>
             </div>
             <div class="block-content block-content-full">
-                <form action="{{ route('cpmk.import') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-group">
-                        <label for="file">Import Excel</label>
-                        <input type="file" name="file" class="form-control" accept=".xls,.xlsx" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-2">Import</button>
-                </form>
+                
                
 
                 @if (session('success'))

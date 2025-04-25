@@ -117,6 +117,4 @@
         <!-- END Your Block -->
     </div>
     <!-- END Page Content -->
-
-    <!-- Inline CSS untuk hilangkan scroll dropdown -->
 @endsection
