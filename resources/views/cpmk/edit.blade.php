@@ -4,6 +4,16 @@
     {{ $judul }}
 @endsection
 
+@section('css_before')
+    <link rel="stylesheet" href="{{ asset('js/plugins/select2/css/select2.min.css') }}">
+@endsection
+
+@section('js_after')
+    <script src="{{ asset('js/lib/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
+    <script>Dashmix.helpersOnLoad(['jq-select2']);</script>
+@endsection
+
 @section('content')
     <!-- Hero -->
     <div class="bg-body-light">
@@ -65,39 +75,41 @@
                                 {{ Session::get('error') }}
                             </div>
                         @endif
-                            <div class="row justify-content-center py-sm-3 py-md-5">
-                            <div class="col-lg-10 col-lg-8">
-                                <div class="mb-4">
-                                    <label class="form-label" for="mata_kuliah">Kode MK</label>
-                                    <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah" multiple>
-                                        @foreach($mk as $t)
-                                            <option value="{{ $t->id }}">{{ $t->kode }}</option>
-                                        @endforeach
-                                    </select>
-                            
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label" for="kode_cpl">Kode CPL</label>
-                                    <select class="form-select" name="cpl_id" id="kode_cpl">
-                                        @foreach ($cpls as $cpl)
-                                            <option value="{{$cpl->id}}">{{$cpl->kode_cpl}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>                                
-                                <div class="mb-4">
-                                            <label class="form-label" for="kode_cpmk">Kode CPMK</label>
-                                            <input name="kode_cpmk-ori" type="hidden" value="{{ $cpmk->kode_cpmk }}">
-                                            <input type="text" id="kode_cpmk" name="kode_cpmk" class="form-control"
-                                                value="{{ $cpmk->kode_cpmk }}"
-                                                required placeholder="Kode">
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label" for="nama_cpmk">Nama CPMK</label>
-                                            <input type="text" id="nama_cpmk" name="nama_cpmk" value="{{ $cpmk->nama_cpmk }}"
-                                                class="form-control" required placeholder="Nama">
-                                        </div>
+                        <div class="form-group">
+                            <div class="mb-4">
+                                <label class="form-label" for="kode_cpl">Kode CPL</label>
+                                <select class="form-select" name="cpl_id" id="kode_cpl">
+                                    @foreach ($cpls as $cpl)
+                                        <option value="{{ $cpl->id }}" {{ $cpmk->cpl_id == $cpl->id ? 'selected' : '' }}>
+                                            {{ $cpl->kode_cpl }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label" for="mata_kuliah">Kode MK</label>
+                                <select class="js-select2 form-select" name="mata_kuliah[]" id="mata_kuliah" multiple>
+                                    @foreach($mk as $t)
+                                        <option value="{{ $t->id }}" {{ in_array($t->id, $selectedMkIds) ? 'selected' : '' }}>
+                                            {{ $t->kode }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>                                
+                            <div class="mb-4">
+                                        <label class="form-label" for="kode_cpmk">Kode CPMK</label>
+                                        <input name="kode_cpmk-ori" type="hidden" value="{{ $cpmk->kode_cpmk }}">
+                                        <input type="text" id="kode_cpmk" name="kode_cpmk" class="form-control"
+                                            value="{{ $cpmk->kode_cpmk }}"
+                                            required placeholder="Kode">
                                     </div>
-                                </div>
+                                    <div class="mb-4">
+                                        <label class="form-label" for="nama_cpmk">Nama CPMK</label>
+                                        <input type="text" id="nama_cpmk" name="nama_cpmk" value="{{ $cpmk->nama_cpmk }}"
+                                            class="form-control" required placeholder="Nama">
+                                    </div>
+                        </div>
+                               
                     </div>
                 </div>
             </form>

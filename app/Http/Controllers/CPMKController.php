@@ -85,6 +85,7 @@ class CPMKController extends Controller
         $mk = MataKuliah::all();
         $cpmk = Cpmk::with('mataKuliah')->findOrFail($id);
         $cpl = Cpl::all();
+        $selectedMkIds = $cpmk->mataKuliah->pluck('id')->toArray();
 
         return view('cpmk.edit', [
             'judul' => $judul,
@@ -92,7 +93,8 @@ class CPMKController extends Controller
             'subparent' => $subparent,
             'cpmk' => $cpmk,
             'mk' => $mk,
-            'cpls' => $cpl
+            'cpls' => $cpl,
+            'selectedMkIds' => $selectedMkIds, // kirim ke view
         ]);
     }
     public function showCplData()
@@ -160,23 +162,44 @@ class CPMKController extends Controller
 
     public function edit(Request $request, int $id)
     {
-        $id_mk = $request->input('mata_kuliah');
-        $kode_cpmk = $request->input('kode_cpmk');
+        // $id_mk = $request->input('mata_kuliah');
+        // $kode_cpmk = $request->input('kode_cpmk');
 
-        // Cek jika mata kuliah dengan kode CPMK sudah ada
-        $cek_ada = Cpmk::whereHas('mataKuliah', function ($query) use ($id_mk) {
-            $query->where('mata_kuliah_id', $id_mk);
-        })->where('kode_cpmk', $kode_cpmk)->exists();
+        // // Cek jika mata kuliah dengan kode CPMK sudah ada
+        // $cek_ada = Cpmk::whereHas('mataKuliah', function ($query) use ($id_mk) {
+        //     $query->where('mata_kuliah_id', $id_mk);
+        // })->where('kode_cpmk', $kode_cpmk)->exists();
 
-        if ($cek_ada) {
-            return back()->with('error', 'Mata Kuliah Dengan Kode CPMK Yang Dimasukkan Sudah Ada!');
+        // if ($cek_ada) {
+        //     return back()->with('error', 'Mata Kuliah Dengan Kode CPMK Yang Dimasukkan Sudah Ada!');
+        // }
+
+        $kodeCpmk = $request->kode_cpmk;
+        $mkIds = $request->mata_kuliah;
+
+        $cekDuplikat = \App\Models\Cpmk::where('kode_cpmk', $kodeCpmk)
+            ->whereHas('mataKuliah', function ($query) use ($mkIds) {
+                $query->whereIn('mata_kuliahs.id', $mkIds);
+            })
+            ->where('id', '!=', $id) // penting agar tidak kena duplikat dirinya sendiri
+            ->exists();
+
+        if ($cekDuplikat) {
+            return redirect()->back()->with('error', 'Mata Kuliah Dengan Kode CPMK Yang Dimasukkan Sudah Ada!');
         }
 
+        // $rules = [
+        //     'Kode_cpl' => 'required|string',
+        //     'kode_cpmk' => 'required|string',
+        //     'nama_cpmk' => 'required|string',
+        //     'mata_kuliah' => 'required|array|min:1',
+        // ];
         $rules = [
-            'Kode_cpl' => 'required|string',
-            'kode_cpmk' => 'required|string',
-            'nama_cpmk' => 'required|string',
-            'mata_kuliah' => 'required|array|min:1',
+            'kode_cpmk' => 'required|unique:cpmks,kode_cpmk,' . $id,
+            'nama_cpmk' => 'required|string|max:255',
+            'mata_kuliah' => 'required|array',
+            'mata_kuliah.*' => 'exists:mata_kuliahs,id',
+            'cpl_id' => 'required|exists:cpls,id',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -186,7 +209,7 @@ class CPMKController extends Controller
         }
 
         $cpmk = Cpmk::findOrFail($id);
-        $cpmk->code_cpl = $request->input('kode_cpl');
+        $cpmk->cpl_id = $request->input('kode_cpl');
         $cpmk->kode_cpmk = $request->input('kode_cpmk');
         $cpmk->nama_cpmk = $request->input('nama_cpmk');
         $cpmk->save();
