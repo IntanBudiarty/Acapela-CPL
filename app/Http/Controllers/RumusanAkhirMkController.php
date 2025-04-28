@@ -105,43 +105,23 @@ class RumusanAkhirMkController extends Controller
 
     public function edit($id)
     {
-        $rumusanAkhirMk = RumusanAkhirMk::findOrFail($id);
+        // Mengambil data RumusanAkhirMk beserta relasi Mata Kuliah, CPL, dan CPMK yang terkait
+        $rumusanAkhirMk = RumusanAkhirMk::with(['mataKuliah', 'cpl', 'cpmk'])->findOrFail($id);
+
+        // Mengambil semua Mata Kuliah, CPL, dan CPMK untuk pilihan di form
+        $mataKuliahs = MataKuliah::all();
         $cpls = Cpl::all();
         $cpmks = Cpmk::all();
-        $mataKuliahs = MataKuliah::all();
 
-        // Persiapkan array repeater
-        $repeater = [];
-        $cplCodes = is_array($rumusanAkhirMk->kd_cpl) ? $rumusanAkhirMk->kd_cpl : explode(',', $rumusanAkhirMk->kd_cpl);
-        $cpmkCodes = is_array($rumusanAkhirMk->kd_cpmk) ? $rumusanAkhirMk->kd_cpmk : explode(',', $rumusanAkhirMk->kd_cpmk);
-        $skorMaksimal = $rumusanAkhirMk->skor_maksimal ? json_decode($rumusanAkhirMk->skor_maksimal, true) : [];
-
-        foreach ($cplCodes as $cpl) {
-            $repeater[] = [
-                'cpl' => $cpl,
-                'cpmks' => []
-            ];
-        }
-
-        // Logic untuk menyesuaikan CPMK ke CPL
-        $cplCount = count($repeater);
-        $cpmkPerCpl = ceil(count($cpmkCodes) / $cplCount);
-
-        $index = 0;
-        foreach ($repeater as &$r) {
-            for ($i = 0; $i < $cpmkPerCpl && $index < count($cpmkCodes); $i++, $index++) {
-                $r['cpmks'][] = [
-                    'cpmk' => $cpmkCodes[$index],
-                    'skor' => $skorMaksimal[$cpmkCodes[$index]] ?? null
-                ];
-            }
-        }
-
-        return view('rumusanAkhirMk.edit', compact('rumusanAkhirMk', 'mataKuliahs', 'cpls', 'cpmks', 'repeater'));
+        // Mengirim data ke view untuk ditampilkan di halaman edit
+        return view('rumusanAkhirMk.edit', compact('rumusanAkhirMk', 'mataKuliahs', 'cpls', 'cpmks'));
     }
+
+
 
     public function update(Request $request, $id)
     {
+        // Validasi inputan
         $validatedData = $request->validate([
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
             'cpl_id' => 'required|exists:cpls,id',
@@ -149,18 +129,29 @@ class RumusanAkhirMkController extends Controller
             'skor_maksimal' => 'required|numeric',
         ]);
 
+        // Mengambil data RumusanAkhirMk berdasarkan ID
         $rumusanAkhirMk = RumusanAkhirMk::findOrFail($id);
 
-        $rumusanAkhirMk->mata_kuliah_id = $validatedData['mata_kuliah_id'];
-        $rumusanAkhirMk->kd_cpl = $validatedData['cpl_id'];
-        $rumusanAkhirMk->kd_cpmk = $validatedData['cpmk_id'];
-        $rumusanAkhirMk->skor_maksimal = $validatedData['skor_maksimal'];
-        $rumusanAkhirMk->total_skor = $validatedData['skor_maksimal'];
+        // Sinkronkan CPL dan CPMK yang dipilih dengan Mata Kuliah
+        $rumusanAkhirMk->cpl()->sync($validated['cpl']);
+        $rumusanAkhirMk->cpmk()->sync($validated['cpmk']);
 
+        // Hitung total skor maksimal dari CPMK yang dipilih
+        $totalSkor = 0;
+        foreach ($rumusanAkhirMk->cpl as $cpmk) {
+            $totalSkor += $cpmk->skor_maks;
+        }
+
+        // Simpan total skor yang dihitung
+        $rumusanAkhirMk->total_skor = $totalSkor;
+
+        // Update data rumusan akhir MK
         $rumusanAkhirMk->save();
 
-        return redirect()->route('rumusanAkhirMk.index')->with('success', 'Data berhasil diperbarui.');
+        // Redirect kembali ke halaman index dengan pesan sukses
+        return redirect()->route('rumusanAkhirMk.index')->with('success', 'Data berhasil diperbarui');
     }
+
 
     public function destroy($id)
     {

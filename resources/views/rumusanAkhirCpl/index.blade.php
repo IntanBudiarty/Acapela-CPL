@@ -75,10 +75,12 @@
                     @foreach ($group['records'] as $index => $data)
                         <tr>
                             <td>{{ $no++ }}</td>
-                            <td>{{ $kd_cpl }}</td>
+                            <!-- Menampilkan Kode CPL -->
+                            <td>{{ \App\Models\Cpl::find($data->kd_cpl)->kode_cpl }}</td>
                             <td>{{ $data->rumusanAkhirMk->mataKuliah->kode ?? 'Data Tidak Tersedia' }}</td>
                             <td>{{ $data->rumusanAkhirMk->mataKuliah->nama ?? 'Data Tidak Tersedia' }}</td>
-                            <td>{{ $data->cpmk }}</td>
+                            <!-- Menampilkan Kode CPMK -->
+                            <td>{{ \App\Models\Cpmk::find($data->cpmk)->kode_cpmk ?? 'Data Tidak Tersedia' }}</td>
                             <td>{{ $data->skor_maksimal }}</td>
                             @if ($index === 0)
                                 <td rowspan="{{ $rowCount }}">{{ $group['total_skor'] }}</td>
@@ -88,8 +90,7 @@
                 @endforeach
             </tbody>
         </table>
-        
-</div>
+    </div>
 </div>
 <!-- END Page Content -->
 @endsection

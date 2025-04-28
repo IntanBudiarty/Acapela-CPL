@@ -85,6 +85,7 @@
                             <th style="font-weight: bold;">CPMK</th>
                             <th style="font-weight: bold;">Skor Maksimal</th>
                             <th style="font-weight: bold;">Total</th>
+                            <th style="font-weight: bold;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,6 +136,20 @@
 
                                         @if ($loop->first && $firstMataKuliahTotal)
                                             <td rowspan="{{ $mataKuliahRowspan }}">{{ $totalSkor }}</td>
+                                            <td rowspan="{{ $mataKuliahRowspan }}" class="text-center align-middle">
+                                                <div class="btn-group">
+                                                    <a href="{{ route('rumusanAkhirMk.edit', $item->id) }}" class="btn btn-secondary btn-sm edit" title="Edit">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </a>
+                                                    <form action="{{ route('rumusan_akhir_mk.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-secondary btn-sm" title="Delete">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>                                                  
+                                                </div>
+                                            </td>
                                             @php $firstMataKuliahTotal = false; @endphp
                                         @endif
                                     </tr>
