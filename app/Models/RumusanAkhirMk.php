@@ -47,4 +47,9 @@ class RumusanAkhirMk extends Model
     {
         return $this->hasMany(Nilai::class, 'rumusan_akhir_mk_id');
     }
+
+    public function rumusanAkhirMkCpls()
+    {
+        return $this->hasMany(RumusanAkhirMkCpl::class, 'rumusan_akhir_mk_id');
+    }
 }

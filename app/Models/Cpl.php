@@ -42,4 +42,9 @@ class Cpl extends Model
         return $this->belongsToMany(MataKuliah::class, 'mata_kuliah_cpl', 'cpl_id', 'mata_kuliah_id')
                     ->withPivot('kode_cpl'); // Menambahkan kolom kode_cpl dari pivot
     }
+
+    public function rumusanAkhirMkCpls()
+    {
+        return $this->hasMany(RumusanAkhirMkCpl::class, 'cpl_id');
+    }
 }

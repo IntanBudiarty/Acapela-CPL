@@ -13,22 +13,38 @@
     <script src="{{ asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
     <script>
         Dashmix.helpersOnLoad(['jq-select2']);
-        
+
         $(document).ready(function() {
             let selectedCPMK = @json($rumusanAkhirMk->kd_cpmk ? explode(',', $rumusanAkhirMk->kd_cpmk) : []);
+            let skorMaksimal = @json($rumusanAkhirMk->skor_maksimal ? json_decode($rumusanAkhirMk->skor_maksimal, true) : []);
+
+            // Set CPMK selected
             $('#kd_cpmk').val(selectedCPMK).trigger('change');
 
-            $('#kd_cpmk').on('change', function() {
-                let selectedCPMK = $(this).val();
+            function renderSkorInputs(selected) {
                 let skorInputs = '';
-                selectedCPMK.forEach(function(cpmk) {
+                selected.forEach(function(cpmk) {
                     skorInputs += `
-                        <div class="form-group">
+                        <div class="form-group mb-3">
                             <label for="skor_maksimal_${cpmk}">Skor Maksimal untuk CPMK ${cpmk}</label>
-                            <input type="number" id="skor_maksimal_${cpmk}" name="skor_maksimal[${cpmk}]" class="form-control" required>
+                            <input type="number" 
+                                   id="skor_maksimal_${cpmk}" 
+                                   name="skor_maksimal[${cpmk}]" 
+                                   value="${skorMaksimal[cpmk] ?? ''}" 
+                                   class="form-control" 
+                                   required>
                         </div>`;
                 });
                 $('#skor_inputs').html(skorInputs);
+            }
+
+            // Render awal
+            renderSkorInputs(selectedCPMK);
+
+            // Render ulang saat select CPMK berubah
+            $('#kd_cpmk').on('change', function() {
+                let selected = $(this).val() || [];
+                renderSkorInputs(selected);
             });
         });
     </script>
@@ -58,46 +74,94 @@
             <form action="{{ route('rumusanAkhirMk.update', $rumusanAkhirMk->id) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="form-group">
+
+                {{-- Mata Kuliah --}}
+                <div class="form-group mb-3">
                     <label for="mata_kuliah_id">Pilih Mata Kuliah</label>
-                    <select id="mata_kuliah_id" name="mata_kuliah_id" class="form-control" required>
+                    <select id="mata_kuliah_id" name="mata_kuliah_id" class="form-control select2" required>
+                        <option value="">-- Pilih Mata Kuliah --</option>
                         @foreach ($mataKuliahs as $mk)
                             <option value="{{ $mk->id }}" {{ $rumusanAkhirMk->mata_kuliah_id == $mk->id ? 'selected' : '' }}>
-                                {{ $mk->kode }} -> {{ $mk->nama }}
+                                {{ $mk->kode }} - {{ $mk->nama }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="kd_cpl">Kode CPL</label>
-                    <select class="js-select2 form-select" id="kd_cpl" name="kd_cpl[]" class="form-control" multiple required>
-                        @foreach ($cpls as $cpl)
-                            <option value="{{ $cpl->kode_cpl }}" {{ in_array($cpl->kode_cpl, is_array($rumusanAkhirMk->kd_cpl) ? $rumusanAkhirMk->kd_cpl : explode(',', $rumusanAkhirMk->kd_cpl)) ? 'selected' : '' }}>
-                                {{ $cpl->kode_cpl }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="kd_cpmk">Kode CPMK</label>
-                    <select class="js-select2 form-select" id="kd_cpmk" name="kd_cpmk[]" class="form-control" multiple>
-                        @php
-                            $selectedCpmks = explode(',', $rumusanAkhirMk->kd_cpmk);
-                        @endphp
+                {{-- CPMK --}}
+                <div class="form-group mb-3">
+                    <label for="kd_cpmk">Pilih CPMK</label>
+                    <select id="kd_cpmk" name="kd_cpmk[]" class="form-control select2" multiple required>
                         @foreach ($cpmks as $cpmk)
-                            <option value="{{ $cpmk->kode_cpmk }}" 
-                                @if(in_array($cpmk->kode_cpmk, $selectedCpmks)) selected @endif>
-                                {{ $cpmk->kode_cpmk }}
+                            <option value="{{ $cpmk->kode_cpmk }}" {{ in_array($cpmk->kode_cpmk, explode(',', $rumusanAkhirMk->kd_cpmk)) ? 'selected' : '' }}>
+                                {{ $cpmk->kode_cpmk }} - {{ $cpmk->nama_cpmk }}
                             </option>
                         @endforeach
                     </select>
-                </div>                
+                </div>
 
+                {{-- Skor Maksimal --}}
                 <div id="skor_inputs"></div>
-                
-                <div class="d-flex justify-content-end">
+
+                {{-- Repeater CPL & CPMK --}}
+                <div id="cpl-repeater">
+                    @foreach ($repeater as $index => $item)
+                        <div class="cpl-item mb-4 border p-3 rounded">
+                            <div class="form-group">
+                                <label for="cpl-{{ $index }}">Pilih CPL</label>
+                                <select name="cpl[{{ $index }}][id]" class="form-control select2" required>
+                                    <option value="">-- Pilih CPL --</option>
+                                    @foreach ($cpls as $cpl)
+                                        <option value="{{ $cpl->kode_cpl }}" {{ $item['cpl'] == $cpl->kode_cpl ? 'selected' : '' }}>
+                                            {{ $cpl->kode_cpl }} - {{ $cpl->nama_cpl }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- CPMK di dalam CPL --}}
+                            <div class="cpmk-repeater mt-3">
+                                @foreach ($item['cpmks'] as $cpmkIdx => $cpmkItem)
+                                    <div class="cpmk-item mb-3 border p-2 rounded">
+                                        <div class="form-group">
+                                            <label>Pilih CPMK</label>
+                                            <select name="cpl[{{ $index }}][cpmk][{{ $cpmkIdx }}][id]" class="form-control select2" required>
+                                                <option value="">-- Pilih CPMK --</option>
+                                                @foreach ($cpmks as $cpmk)
+                                                    <option value="{{ $cpmk->kode_cpmk }}" {{ $cpmkItem['cpmk'] == $cpmk->kode_cpmk ? 'selected' : '' }}>
+                                                        {{ $cpmk->kode_cpmk }} - {{ $cpmk->nama_cpmk }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Skor Maksimal</label>
+                                            <input type="number" 
+                                                   name="cpl[{{ $index }}][cpmk][{{ $cpmkIdx }}][skor]" 
+                                                   class="form-control" 
+                                                   value="{{ $cpmkItem['skor'] }}" 
+                                                   required>
+                                        </div>
+
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-success add-cpmk">Tambah CPMK</button>
+                                            <button type="button" class="btn btn-sm btn-danger remove-cpmk">Hapus CPMK</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-sm btn-primary add-cpl">Tambah CPL</button>
+                                <button type="button" class="btn btn-sm btn-danger remove-cpl">Hapus CPL</button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Tombol Submit --}}
+                <div class="d-flex justify-content-end mt-4">
                     <button type="submit" class="btn btn-primary">Simpan</button>
                     <a href="{{ route('rumusanAkhirMk.index') }}" class="btn btn-secondary ms-2">Batal</a>
                 </div>

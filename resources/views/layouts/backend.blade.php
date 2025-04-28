@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMoeBzRaENm7P35C1pF7j4Y1BLTXtHXWahCQw4B" crossorigin="anonymous">
     <link rel="stylesheet" id="css-main" href="{{ mix('css/dashmix.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <!-- You can include a specific file from public/css/themes/ folder to alter the default color theme of the template. eg: -->
 <!--link rel="stylesheet" id="css-theme" href="{{ mix('css/themes/xmodern.css') }}"-->

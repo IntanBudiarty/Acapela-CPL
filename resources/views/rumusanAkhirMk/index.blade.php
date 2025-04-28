@@ -5,7 +5,6 @@
 @endsection
 
 @section('css_before')
-    <!-- Page JS Plugins CSS -->
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables-bs5/css/dataTables.bootstrap5.min.css') }}">
     <link rel="stylesheet" href="{{ asset('js/plugins/datatables-buttons-bs5/css/buttons.bootstrap5.min.css') }}">
     <link rel="stylesheet" href="{{ asset('js/plugins/select2/css/select2.min.css') }}">
@@ -34,7 +33,6 @@
 @endsection
 
 @section('content')
-<!-- Hero -->
 <div class="bg-body-light">
     <div class="content content-full">
         <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
@@ -47,11 +45,8 @@
         </div>
     </div>
 </div>
-<!-- END Hero -->
 
-<!-- Page Content -->
 <div class="content">
-    <!-- Tambah Data -->
     <div class="block block-rounded block-fx-shadow">
         <div class="block-header block-header-default">
             <h3 class="block-title">Rumusan Akhir MK <small>List</small></h3>
@@ -61,9 +56,7 @@
         </div>
 
         @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+            <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
         <div class="block-content block-content-full">
@@ -83,76 +76,76 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-bordered table-striped text-center table-vcenter js-datatable-bottons">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 50px;">No</th>
-                            <th class="text-center" style="width: 100px;">Kode MK</th>
-                            <th class="text-center">Mata Kuliah</th>
-                            <th class="text-center">CPL</th>
-                            <th class="text-center">CPMK</th>
-                            <th class="text-center">Skor Maks</th>
-                            <th class="text-center">Total</th>
-                            <th class="text-center" style="width: 100px;">Aksi</th>
+                            <th style="font-weight: bold;">No.</th>
+                            <th style="font-weight: bold;">Mata Kuliah</th>
+                            <th style="font-weight: bold;">CPL</th>
+                            <th style="font-weight: bold;">CPMK</th>
+                            <th style="font-weight: bold;">Skor Maksimal</th>
+                            <th style="font-weight: bold;">Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php $no = 1; @endphp
-                        @foreach ($rumusanAkhirMkGrouped as $mataKuliahId => $group)
-                            @php 
-                                $firstItem = $group->first(); // Ambil elemen pertama dari group
-                                $rowspan = $group->count(); 
-                                $totalSkor = $group->sum('skor_maksimal'); // Hitung total skor dari semua CPMK
+                        @php $noMataKuliah = 1; @endphp
+                        @foreach ($grouped as $mataKuliahNama => $cplGroups)
+                            @php
+                                $mataKuliahRowspan = $cplGroups->flatten()->count();
+                                $totalSkor = $cplGroups->flatten()->sum('skor_maksimal');
+                                $firstMataKuliah = true;
+                                $firstMataKuliahTotal = true;
                             @endphp
-                            <tr>
-                                <!-- No, Kode MK, Mata Kuliah, CPL hanya ditampilkan di baris pertama -->
-                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $no++ }}</td>
-                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $firstItem->mataKuliah->kode ?? 'N/A' }}</td>
-                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $firstItem->mataKuliah->nama ?? 'N/A' }}</td>
-                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $firstItem->kd_cpl }}</td>
-                    
-                                <!-- CPMK pertama -->
-                                @foreach ($group as $index => $rumusan)
-                                    @if ($index == 0)
-                                        <td class="text-center">{{ $rumusan->kd_cpmk }}</td>
-                                        <td class="text-center">{{ $rumusan->skor_maksimal }}</td>
-                                    @endif
-                                @endforeach
-                    
-                                <!-- Total Skor hanya di baris pertama -->
-                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">{{ $totalSkor }}</td>
-                    
-                                <!-- Aksi hanya di baris pertama -->
-                                <td rowspan="{{ $rowspan }}" class="text-center align-middle">
-                                    <div class="btn-group">
-                                        <a href="{{ route('rumusanAkhirMk.edit', $rumusan->id) }}" class="btn btn-secondary btn-sm edit" title="Edit">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <form action="{{ route('rumusan_akhir_mk.destroy', $rumusan->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-secondary btn-sm" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>                                                  
-                                    </div>
-                                </td>
-                            </tr>
-                    
-                            <!-- CPMK lainnya -->
-                            @foreach ($group as $index => $rumusan)
-                                @if ($index > 0)
+
+                            @foreach ($cplGroups as $cplKode => $items)
+                                @php
+                                    $cplRowspan = $items->count();
+                                    $firstCpl = true;
+                                    $cpl = \App\Models\Cpl::find($items->first()->kd_cpl);
+                                @endphp
+
+                                @foreach ($items as $item)
+                                    @php
+                                        $cpmk = \App\Models\Cpmk::find($item->kd_cpmk);
+                                    @endphp
+
                                     <tr>
-                                        <td class="text-center">{{ $rumusan->kd_cpmk }}</td>
-                                        <td class="text-center">{{ $rumusan->skor_maksimal }}</td>
+                                        @if ($firstMataKuliah)
+                                            <td rowspan="{{ $mataKuliahRowspan }}">{{ $noMataKuliah }}</td>
+                                            <td rowspan="{{ $mataKuliahRowspan }}">{{ $mataKuliahNama }}</td>
+                                            @php
+                                                $firstMataKuliah = false;
+                                            @endphp
+                                        @endif
+
+                                        @if ($firstCpl)
+                                            <td rowspan="{{ $cplRowspan }}">
+                                                {{ $cpl->kode_cpl ?? '-' }}
+                                            </td>
+                                            @php
+                                                $firstCpl = false;
+                                            @endphp
+                                        @endif
+
+                                        <td>
+                                            {{ $cpmk->kode_cpmk ?? '-' }}
+                                        </td>
+
+                                        <td>{{ $item->skor_maksimal }}</td>
+
+                                        @if ($loop->first && $firstMataKuliahTotal)
+                                            <td rowspan="{{ $mataKuliahRowspan }}">{{ $totalSkor }}</td>
+                                            @php $firstMataKuliahTotal = false; @endphp
+                                        @endif
                                     </tr>
-                                @endif
+                                @endforeach
                             @endforeach
+                            @php $noMataKuliah++; @endphp
                         @endforeach
                     </tbody>
-                    
                 </table>
             </div>
+
         </div>
     </div>
 </div>
