@@ -20,7 +20,7 @@ class CPLController extends Controller
         $judul = 'Kelola CPL';
         $parent = 'CPL';
 
-        $tampil = Cpl::paginate(10);  // Menampilkan hasil per halaman (10 data per halaman)
+        $tampil = Cpl::all();
         $details = CPLDetail::all(); // Ambil data CPLDetail // Menampilkan hasil per halaman (10 data per halaman)
 
         return view('cpl.index', [

@@ -245,28 +245,28 @@ class MahasiswaController extends Controller
         try {
             // Proses impor file dengan menyertakan angkatan sebagai parameter
             Excel::import(new MahasiswaImport($angkatan), $file);
-    
-            // Setelah data diimport, perbarui NIM sesuai urutan
-            $this->updateNIMAfterImport($angkatan);
-    
+
+            // // Setelah data diimport, perbarui NIM sesuai urutan
+            // $this->updateNIMAfterImport($angkatan);
+
             return redirect()->route('mhs')->with('success', "Data mahasiswa angkatan $angkatan berhasil diimport.");
         } catch (\Exception $e) {
             // Tangani kesalahan
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
-    
-    protected function updateNIMAfterImport($angkatan)
-    {
-        // Ambil semua mahasiswa berdasarkan angkatan
-        $mahasiswas = Mahasiswa::where('angkatan', $angkatan)->orderBy('id', 'asc')->get();
-    
-        $nimCounter = 1;
-        foreach ($mahasiswas as $mahasiswa) {
-            $newNim = $angkatan . str_pad($nimCounter, 4, '0', STR_PAD_LEFT);
-            $mahasiswa->nim = $newNim;
-            $mahasiswa->save();
-            $nimCounter++;
-        }
-    }
+
+    // protected function updateNIMAfterImport($angkatan)
+    // {
+    //     // Ambil semua mahasiswa berdasarkan angkatan
+    //     $mahasiswas = Mahasiswa::where('angkatan', $angkatan)->orderBy('id', 'asc')->get();
+
+    //     $nimCounter = 1;
+    //     foreach ($mahasiswas as $mahasiswa) {
+    //         $newNim = $angkatan . str_pad($nimCounter, 4, '0', STR_PAD_LEFT);
+    //         $mahasiswa->nim = $newNim;
+    //         $mahasiswa->save();
+    //         $nimCounter++;
+    //     }
+    // }
 }    
