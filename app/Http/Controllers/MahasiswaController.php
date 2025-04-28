@@ -85,7 +85,7 @@ class MahasiswaController extends Controller
         $mhs->nim = $newNim;
         $mhs->nama = $request->input('nama');
         $mhs->angkatan = $angkatan;
-        $mhs->kelas = $kelas;
+        $mhs->kelas = $request->input('kelas');
         $mhs->save();
 
         return back()->with('success', 'Data Mahasiswa Berhasil Ditambahkan!');

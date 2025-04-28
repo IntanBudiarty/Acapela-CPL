@@ -94,8 +94,10 @@
                                     <label class="form-label" for="angkatan">Angkatan</label>
                                     <select class="js-select2 form-select" name="angkatan" id="angkatan">
                                         @for ($year = (int)date('Y'); 1900 <= $year; $year--)
-                                            <option value="{{ $year + 3 }}">{{ $year + 3 }}</option>
-                                        @endfor
+                                        <option value="{{ $year + 3 }}" {{ ($year + 3) == $mahasiswa->angkatan ? 'selected' : '' }}>
+                                            {{ $year + 3 }}
+                                        </option>
+                                    @endfor
                                     </select>
                                 </div>
                                 <div class="mb-4">
