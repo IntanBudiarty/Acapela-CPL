@@ -97,6 +97,12 @@
                                         @endfor
                                     </select>
                                 </div>
+                                <div class="mb-4">
+                                    <label class="form-label" for="kelas">Kelas</label>
+                                    <input type="text" class="form-control" id="kelas"
+                                           value="{{ old('kelas') }}" name="kelas"
+                                           placeholder="Masukkan Kelas ..." required>
+                                </div>
                             </div>
                         </div>
                     </div>

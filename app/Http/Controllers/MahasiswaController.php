@@ -62,22 +62,35 @@ class MahasiswaController extends Controller
             'nim' => 'required|string|unique:mahasiswas',
             'nama' => 'required|string',
             'angkatan' => 'required|integer',
+            'kelas' => 'required|string',
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput($request->all);
+            return redirect()->back()->withErrors($validator)->withInput($request->all());
         }
 
+        // Mendapatkan NIM terakhir dari mahasiswa yang ada pada angkatan yang sama
+        $angkatan = $request->input('angkatan');
+        $lastMahasiswa = Mahasiswa::where('angkatan', $angkatan)->orderBy('nim', 'desc')->first();
+        
+        // Tentukan NIM baru, jika belum ada mahasiswa dengan angkatan tersebut, mulai dari 1
+        $newNim = $lastMahasiswa ? (int)substr($lastMahasiswa->nim, -4) + 1 : 1;
+        $newNim = str_pad($newNim, 4, '0', STR_PAD_LEFT); // Pastikan NIM selalu 4 digit, seperti 0001, 0002, dll
+        $newNim = $angkatan . $newNim; // Gabungkan angkatan dan NIM
+
+        // Simpan data mahasiswa baru
         $mhs = new Mahasiswa();
-        $mhs->nim = $request->input('nim');
+        $mhs->nim = $newNim;
         $mhs->nama = $request->input('nama');
-        $mhs->angkatan = $request->input('angkatan');
+        $mhs->angkatan = $angkatan;
+        $mhs->kelas = $kelas;
         $mhs->save();
 
-        return back()->with('success', 'Data Berhasil Ditambahkan!.');
+        return back()->with('success', 'Data Mahasiswa Berhasil Ditambahkan!');
     }
+
 
     public function edit(Request $request, int $id)
     {
@@ -87,6 +100,7 @@ class MahasiswaController extends Controller
             'nim' => 'required|string|unique:mahasiswas,nim,' . $mhs->id,
             'nama' => 'required|string',
             'angkatan' => 'required|integer',
+            'kelas' => 'required|string',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -98,6 +112,7 @@ class MahasiswaController extends Controller
         $mhs->nim = $request->input('nim');
         $mhs->nama = $request->input('nama');
         $mhs->angkatan = $request->input('angkatan');
+        $mhs->kelas = $request->input('kelas');
         $mhs->save();
 
         return back()->with('success', 'Data Berhasil Diubah!');
@@ -217,24 +232,41 @@ class MahasiswaController extends Controller
     }
 
     public function import(Request $request)
-{
-    // Validasi input
-    $request->validate([
-        'angkatan' => 'required|integer',
-        'file' => 'required|mimes:xlsx,xls|max:2048',
-    ]);
-
-    $file = $request->file('file');
-    $angkatan = $request->angkatan; // Ambil angkatan dari form
-
-    try {
-        // Proses impor file dengan menyertakan angkatan sebagai parameter
-        Excel::import(new MahasiswaImport($angkatan), $file);
-
-        return redirect()->route('mhs')->with('success', "Data mahasiswa angkatan $angkatan berhasil diimport.");
-    } catch (\Exception $e) {
-        // Tangani kesalahan
-        return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    {
+        // Validasi input
+        $request->validate([
+            'angkatan' => 'required|integer',
+            'file' => 'required|mimes:xlsx,xls|max:2048',
+        ]);
+    
+        $file = $request->file('file');
+        $angkatan = $request->angkatan; // Ambil angkatan dari form
+    
+        try {
+            // Proses impor file dengan menyertakan angkatan sebagai parameter
+            Excel::import(new MahasiswaImport($angkatan), $file);
+    
+            // Setelah data diimport, perbarui NIM sesuai urutan
+            $this->updateNIMAfterImport($angkatan);
+    
+            return redirect()->route('mhs')->with('success', "Data mahasiswa angkatan $angkatan berhasil diimport.");
+        } catch (\Exception $e) {
+            // Tangani kesalahan
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
+    
+    protected function updateNIMAfterImport($angkatan)
+    {
+        // Ambil semua mahasiswa berdasarkan angkatan
+        $mahasiswas = Mahasiswa::where('angkatan', $angkatan)->orderBy('id', 'asc')->get();
+    
+        $nimCounter = 1;
+        foreach ($mahasiswas as $mahasiswa) {
+            $newNim = $angkatan . str_pad($nimCounter, 4, '0', STR_PAD_LEFT);
+            $mahasiswa->nim = $newNim;
+            $mahasiswa->save();
+            $nimCounter++;
+        }
     }
-}
+}    

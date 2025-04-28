@@ -18,6 +18,7 @@ class MahasiswaImport implements ToModel, WithHeadingRow
             'nim'     => $row['nim'],
             'nama'    => $row['nama'],
             'angkatan' => $row['angkatan'],
+            'kelas' => $row['kelas'],
         ]);
     }
 }

@@ -97,6 +97,8 @@
                                     <th class="text-center" style="width: 80px;">No.</th>
                                     <th>NIM</th>
                                     <th>Nama</th>
+                                    <th>Angkatan</th>
+                                    <th>Kelas</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -106,6 +108,8 @@
                                         <td class="text-center">{{ $index + 1 }}</td>
                                         <td>{{ $adm->nim }}</td>
                                         <td>{{ $adm->nama }}</td>
+                                        <td>{{ $adm->angkatan }}</td>
+                                        <td>{{ $adm->kelas}}</td>
                                         <td class="text-center" style="width: 100px">
                                             <div class="btn-group">
                                                 <a href="{{ Request::url() }}/edit/{{ $adm->id }}" class="btn btn-secondary btn-sm" title="Edit">
