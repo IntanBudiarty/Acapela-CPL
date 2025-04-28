@@ -11,6 +11,10 @@ class MataKuliah extends Model
 {
     protected $table = 'mata_kuliahs';
 
+    protected $fillable = [
+        'kode', 'nama', 'kelas', 'sks', 'semester', 'dosen_pengampu_1', 'dosen_pengampu_2',
+    ];
+
     public function rumusanAkhirMk()
     {
         return $this->hasMany(RumusanAkhirMk::class, 'mata_kuliah_id');

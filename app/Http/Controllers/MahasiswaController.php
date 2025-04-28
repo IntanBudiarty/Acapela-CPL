@@ -117,25 +117,43 @@ class MahasiswaController extends Controller
         $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
 
         // Ambil semua mahasiswa dengan angkatan yang sama
-        $mahasiswaLain = Mahasiswa::where('angkatan', $mahasiswa->angkatan)->get();
+        $mahasiswaLain = Mahasiswa::with('mataKuliahs')
+            ->where('angkatan', $mahasiswa->angkatan)
+            ->get();
+
+        $terdaftar = 0;
+        $tidakTerdaftarKarenaPenuh = 0;
+        $sudahAmbil = 0;
 
         foreach ($mahasiswaLain as $mhs) {
-            // Hitung total SKS yang sudah diambil mahasiswa ini
             $totalSKS = $mhs->mataKuliahs->sum('sks');
 
-            // Cek jika penambahan SKS membuat totalnya lebih dari 24
-            if ($totalSKS + $mataKuliah->sks > 24) {
-                return redirect()->back()->with('error', "Total SKS untuk mahasiswa dengan NIM $mhs->nim melebihi batas 24.");
+            // Cek kalau matkul sudah diambil, skip
+            if ($mhs->mataKuliahs()->where('mata_kuliah_id', $mataKuliah->id)->exists()) {
+                $sudahAmbil++;
+                continue;
             }
 
-            // Pastikan mata kuliah belum terdaftar untuk mahasiswa ini
-            if (!$mhs->mataKuliahs()->where('mata_kuliah_id', $mataKuliah->id)->exists()) {
+            // Cek kalau SKS masih bisa ditambah
+            if ($totalSKS + $mataKuliah->sks <= 24) {
                 $mhs->mataKuliahs()->attach($mataKuliah->id);
+                $terdaftar++;
+            } else {
+                $tidakTerdaftarKarenaPenuh++;
             }
         }
 
-        return redirect()->route('mahasiswa.detail', $mahasiswaId)->with('success', 'Mata kuliah berhasil ditambahkan ke semua mahasiswa angkatan ' . $mahasiswa->angkatan);
+        $pesan = "$terdaftar mahasiswa berhasil ditambahkan mata kuliah $mataKuliah->nama.";
+        if ($tidakTerdaftarKarenaPenuh > 0) {
+            $pesan .= " $tidakTerdaftarKarenaPenuh mahasiswa tidak ditambahkan karena melebihi batas SKS.";
+        }
+        if ($sudahAmbil > 0) {
+            $pesan .= " $sudahAmbil mahasiswa sudah pernah mengambil mata kuliah ini.";
+        }
+
+        return redirect()->route('mahasiswa.detail', $mahasiswaId)->with('success', $pesan);
     }
+
 
     public function removeMataKuliah($mahasiswaId, $mataKuliahId)
     {
@@ -152,21 +170,21 @@ class MahasiswaController extends Controller
     public function showDetail($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
-        $mataKuliah = $mahasiswa->mataKuliah; // Misalkan ada relasi 'mataKuliah' pada model Mahasiswa
+        $mataKuliah = $mahasiswa->mataKuliah; 
         return view('mahasiswa.detail', compact('mahasiswa', 'mataKuliah'));
     }
-    // Di Controller Mahasiswa
+  
     public function detail($id)
     {
-        // Ambil data mahasiswa berdasarkan ID
+       
         $mahasiswa = Mahasiswa::with('mataKuliahs')->find($id);
 
-        // Pastikan mahasiswa ditemukan
+        
         if (!$mahasiswa) {
             return redirect()->route('mhs')->with('error', 'Mahasiswa tidak ditemukan');
         }
 
-        // Ambil semua mata kuliah untuk ditampilkan di form
+       
         $mataKuliahs = MataKuliah::all();
         $totalSKS = $mahasiswa->mataKuliahs->sum('sks');
 
@@ -175,21 +193,21 @@ class MahasiswaController extends Controller
     public function mataKuliah($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
-        $mataKuliah = $mahasiswa->mataKuliah; // Pastikan relasi sudah didefinisikan di model Mahasiswa
+        $mataKuliah = $mahasiswa->mataKuliah; 
         return view('mahasiswa.mata_kuliah', compact('mahasiswa', 'mataKuliah'));
     }
     public function showMataKuliah($id)
     {
-        // Ambil data mahasiswa beserta mata kuliah yang diambilnya
+        
         $mahasiswa = Mahasiswa::with('mataKuliahs')->findOrFail($id);
 
-        // Hitung total SKS yang diambil mahasiswa
-        $sum_sks = $mahasiswa->mataKuliahs->sum('sks'); // Menggunakan relasi 'mataKuliahs'
+        
+        $sum_sks = $mahasiswa->mataKuliahs->sum('sks'); 
 
-        // Ambil semua mata kuliah untuk dropdown (jika dibutuhkan)
+       
         $mataKuliahs = MataKuliah::all();
 
-        // Kembalikan tampilan dengan data yang diperlukan
+        
         return view('mahasiswa.detail', compact('mahasiswa', 'mataKuliahs', 'sum_sks'));
     }
 

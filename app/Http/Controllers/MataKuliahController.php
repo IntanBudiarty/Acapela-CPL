@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB;
 use App\Models\MataKuliah;
 use App\Models\DosenAdmin;
 use App\Imports\MataKuliahImport;
@@ -12,25 +12,6 @@ use Illuminate\Routing\Controller;
 
 class MataKuliahController extends Controller
 {
-    public function import(Request $request)
-    {
-        // Validasi file yang diunggah
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls|max:2048',
-        ]);
-
-        $file = $request->file('file');
-
-        try {
-            // Proses impor file
-            // Excel::import(new ImportMahasiswa, $request->file('file'));
-            Excel::import(new MataKuliahImport, $file->getRealPath());
-            return redirect()->route('mk')->with('success', 'Data berhasil diimport.');
-        } catch (\Exception $e) {
-            // Tangani kesalahan
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
-        }
-    }
     public function index()
     {
         // Ambil data user yang sedang login
@@ -185,4 +166,24 @@ class MataKuliahController extends Controller
         // Return data sebagai JSON
         return response()->json($mataKuliah);
     }
+    public function import(Request $request)
+    {
+        // Validasi file yang diunggah
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:2048',
+        ]);
+
+        $file = $request->file('file');
+
+        try {
+            // Proses impor file
+            Excel::import(new MataKuliahImport, $file);
+            return redirect()->route('mk')->with('success', 'Data berhasil diimport.');
+        } catch (\Exception $e) {
+            // Log error dan tangani kesalahan
+            \Log::error('Error importing file: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat mengimpor file.']);
+        }
+    }
 }
+

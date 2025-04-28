@@ -74,6 +74,12 @@ class DosenController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all);
         }
+        if ($request->jabatan == 'Kaprodi') {
+            $kaprodiExists = DosenAdmin::where('jabatan', 'Kaprodi')->count();
+            if ($kaprodiExists >= 1) {
+                return redirect()->back()->with('error', 'Hanya boleh ada satu Kaprodi!')->withInput($request->all);
+            }
+        }        
 
         $user = new User;
         $user->username = $request->input('username');
@@ -109,6 +115,12 @@ class DosenController extends Controller
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput($request->all);
+        }
+        if ($request->jabatan == 'Kaprodi') {
+            $kaprodiExists = DosenAdmin::where('jabatan', 'Kaprodi')->where('id', '!=', $id)->exists();
+            if ($kaprodiExists) {
+                return redirect()->back()->with('error', 'Hanya boleh ada satu Kaprodi!')->withInput($request->all);
+            }
         }
 
         $data->nip = $request->input('nip');

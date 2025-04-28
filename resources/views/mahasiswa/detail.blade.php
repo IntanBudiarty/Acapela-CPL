@@ -1,6 +1,5 @@
-{{-- resources/views/mahasiswa/detail.blade.php --}}
 
-@extends('layouts.backend')  {{-- Pastikan Anda menggunakan layout yang benar sesuai aplikasi Anda. --}}
+@extends('layouts.backend') 
 
 @section('title')
     Detail Mahasiswa
@@ -28,8 +27,12 @@
     {{-- Informasi Mahasiswa --}}
     <div class="content">
         <div class="block block-rounded block-fx-shadow">
-            <div class="block-header block-header-default">
-                <h3 class="block-title">Informasi Mahasiswa</h3>
+            <div class="block-header block-header-default d-flex justify-content-between align-items-center">
+                <h3 class="block-title mb-0">Informasi Mahasiswa</h3>
+                <button type="button" class="btn btn-sm btn-secondary"
+                        onclick="window.location.href='{{ route('mhs') }}'">
+                    Kembali
+                </button>
             </div>
             <div class="block-content">
                 <table class="table table-bordered">
@@ -60,6 +63,7 @@
                             <th>Kelas</th> 
                             <th>Mata Kuliah</th> 
                             <th>SKS</th> 
+                            <th>Aksi</th> 
                         </tr> 
                     </thead> 
                     <tbody>
@@ -104,8 +108,6 @@
                         Tambah Mata Kuliah
                     </button>
 
-                    <!-- Modal -->
-                  {{-- Modal Tambah Mata Kuliah --}}
     <div class="modal fade" id="tambahMataKuliahModal" tabindex="-1" aria-labelledby="tambahMataKuliahModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -114,7 +116,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Tabel Mata Kuliah -->
+                   
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered">
                             <thead>

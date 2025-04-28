@@ -35,6 +35,20 @@
     <!-- Hero -->
     <div class="bg-body-light">
         <div class="content content-full">
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-2">
+                            <i class="fa fa-fw fa-times-circle"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            {{ session('error') }}
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            @endif
+
             <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
                 <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">{{ $judul }}</h1>
                 <nav class="flex-shrink-0 my-2 my-sm-0 ms-sm-3" aria-label="breadcrumb">
@@ -49,6 +63,7 @@
 
     <!-- Page Content -->
     <div class="content">
+        
 
         <!-- Dynamic Table with Export Buttons -->
         <div class="block block-rounded block-fx-shadow">

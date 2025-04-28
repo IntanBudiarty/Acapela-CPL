@@ -67,6 +67,21 @@
                     </div>
                     <button type="submit" class="btn btn-primary mt-2">Import</button>
                 </form>
+                @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="block-content block-content-full">
                 <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/tables_datatables.js -->
                 <div class="table-responsive">
@@ -76,11 +91,11 @@
                             <th style="width: 80px;">No.</th>
                             <th>Kode Mata Kuliah</th>
                             <th>Nama Mata Kuliah</th>
-                            <th>Dosen Pengampu 1</th>
-                            <th>Dosen Pengampu 2</th>
                             <th>Kelas</th>
                             <th>SKS</th>
                             <th>Semester</th>
+                            <th>Dosen Pengampu 1</th>
+                            <th>Dosen Pengampu 2</th>
                             <th>Aksi</th>
                         </tr>
                         </thead>
@@ -90,11 +105,11 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $adm->kode }}</td>
                                 <td>{{ $adm->nama }}</td>
-                                <td>{{ $adm->dosenPengampu1->nama ?? '-' }}</td>
-                                <td>{{ $adm->dosenPengampu2->nama ?? '-' }}</td>
                                 <td>{{ $adm->kelas }}</td>
                                 <td>{{ $adm->sks }}</td>
                                 <td>{{ $adm->semester }}</td>
+                                <td>{{ $adm->dosenPengampu1->nama ?? '-' }}</td>
+                                <td>{{ $adm->dosenPengampu2->nama ?? '-' }}</td>
                                 <td style="width: 100px">
                                     <div class="btn-group">
                                         <a type="button" href="{{ Request::url() }}/edit/{{ $adm->id }}"
