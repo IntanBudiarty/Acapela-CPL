@@ -10,12 +10,13 @@ use Illuminate\Http\Request;
 
 class NilaiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         $angkatanList = Mahasiswa::select('angkatan')->distinct()->orderBy('angkatan', 'desc')->pluck('angkatan');
 
         $selectedAngkatan = $request->angkatan ?? $angkatanList->first();
+
         if ($user->status == 'Dosen') {
             $mataKuliah = MataKuliah::where('dosen_pengampu_1', $user->id)
                 ->orWhere('dosen_pengampu_2', $user->id)
@@ -38,8 +39,8 @@ class NilaiController extends Controller
 
         // Filter mahasiswa berdasarkan angkatan
         $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
-                $query->where('mata_kuliah_id', $mataKuliahId);
-            })
+            $query->where('mata_kuliah_id', $mataKuliahId);
+        })
             ->where('angkatan', $selectedAngkatan)
             ->get();
 
@@ -53,12 +54,6 @@ class NilaiController extends Controller
                 ->where('mata_kuliah_id', $mataKuliahId)
                 ->get()
                 ->keyBy('rumusan_akhir_mk_id');
-        }
-
-        // Menghitung nilai huruf berdasarkan total nilai untuk setiap mahasiswa
-        foreach ($mahasiswaList as $mahasiswa) {
-            $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
-            $mahasiswa->grade = $this->getGrade($totalNilai);  // Tentukan grade berdasarkan total nilai
         }
 
         // Menghitung nilai huruf berdasarkan total nilai untuk setiap mahasiswa
@@ -83,14 +78,14 @@ class NilaiController extends Controller
 
         foreach ($request->nilai as $mahasiswaId => $rumusans) {
             $totalNilai = 0;
-        
+
             foreach ($rumusans as $rumusanAkhirMkId => $nilai) {
                 $rumusan = \App\Models\RumusanAkhirMk::findOrFail($rumusanAkhirMkId);
-        
+
                 if ($nilai > $rumusan->skor_maksimal) {
                     return back()->withErrors(['Nilai tidak boleh melebihi skor maksimal CPMK.'])->withInput();
                 }
-        
+
                 Nilai::updateOrCreate(
                     [
                         'mahasiswa_id' => $mahasiswaId,
@@ -99,14 +94,20 @@ class NilaiController extends Controller
                     ],
                     ['nilai' => $nilai]
                 );
-        
+
                 $totalNilai += $nilai;
             }
-        
+
+            // Update total nilai untuk mahasiswa
             Nilai::where('mahasiswa_id', $mahasiswaId)
                 ->where('mata_kuliah_id', $mataKuliahId)
                 ->update(['total' => $totalNilai]);
-        }        
+
+            // Update grade berdasarkan total nilai
+            $mahasiswa = Mahasiswa::find($mahasiswaId);
+            $mahasiswa->grade = $this->getGrade($totalNilai);
+            $mahasiswa->save();
+        }
 
         return redirect()->route('nilai.index')->with('success', 'Nilai berhasil diperbarui.');
     }
