@@ -68,15 +68,15 @@
 
                             @foreach ($nilaiItems as $index => $item)
                                 @if ($index == 0)
-                                    <td>{{ $item->rumusanAkhirMk->kd_cpl ?? '-' }}</td>
-                                    <td>{{ $item->rumusanAkhirMk->kd_cpmk ?? '-' }}</td>
+                                    <td>{{ \App\Models\Cpl::find($item->rumusanAkhirMk->kd_cpl)->kode_cpl ?? '-' }}</td>
+                                    <td>{{ \App\Models\Cpmk::find($item->rumusanAkhirMk->kd_cpmk)->kode_cpmk ?? '-' }}</td>
                                     <td>{{ $item->nilai }}</td>
                                     <td rowspan="{{ count($nilaiItems) }}">{{ $totalNilai }}</td>
                                     <td rowspan="{{ count($nilaiItems) }}">{{ $grade }}</td>
                                 @else
                                     <tr>
-                                        <td>{{ $item->rumusanAkhirMk->kd_cpl ?? '-' }}</td>
-                                        <td>{{ $item->rumusanAkhirMk->kd_cpmk ?? '-' }}</td>
+                                        <td>{{ \App\Models\Cpl::find($item->rumusanAkhirMk->kd_cpl)->kode_cpl ?? '-' }}</td>
+                                        <td>{{ \App\Models\Cpmk::find($item->rumusanAkhirMk->kd_cpmk)->kode_cpmk ?? '-' }}</td>
                                         <td>{{ $item->nilai }}</td>
                                     </tr>
                                 @endif

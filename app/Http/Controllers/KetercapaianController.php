@@ -134,39 +134,40 @@ class KetercapaianController extends Controller
 
     public function calculateCapaianCpl($mahasiswaId)
     {
-        // Ambil data nilai mahasiswa
         $nilai = Nilai::with('rumusanAkhirMk')
             ->where('mahasiswa_id', $mahasiswaId)
             ->get();
 
-        // Ambil total skor maksimal per CPL dengan menjumlahkan seluruh skor_maksimal dari CPMK terkait
         $rumusanAkhirCpl = DB::table('rumusan_akhir_cpl')
             ->select('kd_cpl', DB::raw('SUM(skor_maksimal) as total_skor_maksimal'))
             ->groupBy('kd_cpl')
             ->get()
-            ->pluck('total_skor_maksimal', 'kd_cpl'); 
-        $namaCpl = Cpl::pluck('nama_cpl', 'kode_cpl');
+            ->pluck('total_skor_maksimal', 'kd_cpl');
+
+        // Ambil kode_cpl dan nama_cpl sinkron
+        $namaCpl = Cpl::pluck('nama_cpl', 'kode_cpl')->toArray(); // Ini array kode_cpl => nama_cpl
+
         $capaianCpl = [];
 
         foreach ($nilai as $item) {
-            // Ambil daftar CPL dari rumusanAkhirMk
             $kdCplList = explode(',', $item->rumusanAkhirMk->kd_cpl ?? '');
-            $totalNilai = $item->nilai; // Nilai CPMK mahasiswa
+            $totalNilai = $item->nilai;
 
             foreach ($kdCplList as $kdCpl) {
-                $kdCpl = trim($kdCpl); // Bersihkan spasi
+                $kdCpl = trim($kdCpl);
 
                 if (!empty($kdCpl)) {
-                    // Jika CPL sudah ada, tambahkan nilai
-                    if (isset($capaianCpl[$kdCpl])) {
-                        $capaianCpl[$kdCpl]['total_nilai'] += $totalNilai;
+                    // Format kode CPL harus sama
+                    $kodeCplFormatted = 'CPL-' . str_pad($kdCpl, 2, '0', STR_PAD_LEFT);
+
+                    if (isset($capaianCpl[$kodeCplFormatted])) {
+                        $capaianCpl[$kodeCplFormatted]['total_nilai'] += $totalNilai;
                     } else {
-                        // Jika CPL belum ada, buat entri baru dengan total skor maksimal yang benar
-                        $capaianCpl[$kdCpl] = [
-                            'kode_cpl' => $kdCpl,
-                            'nama_cpl' => $namaCpl[$kdCpl] ?? 'Tidak Ada',
+                        $capaianCpl[$kodeCplFormatted] = [
+                            'kode_cpl' => $kodeCplFormatted,
+                            'nama_cpl' => $namaCpl[$kodeCplFormatted] ?? 'Tidak Ada',
                             'total_nilai' => $totalNilai,
-                            'total_skor_maksimal' => $rumusanAkhirCpl[$kdCpl] ?? 0, // Ambil total skor maksimal dari semua CPMK dalam CPL
+                            'total_skor_maksimal' => $rumusanAkhirCpl[$kdCpl] ?? 0,
                             'persentase' => 0,
                             'predikat' => '-'
                         ];
@@ -175,28 +176,15 @@ class KetercapaianController extends Controller
             }
         }
 
-        // *Hitung persentase ketercapaian berdasarkan total skor maksimal dari rumusanAkhirCpl*
-        foreach ($capaianCpl as $kodeCpl => &$cplData) {
-            $nilaiMax = $cplData['total_skor_maksimal']; // Gunakan total skor maksimal yang benar
-
-            if ($nilaiMax > 0) {
-                // Hitung persentase ketercapaian
-                $cplData['persentase'] = number_format(($cplData['total_nilai'] / $nilaiMax) * 100, 2);
-            } else {
-                $cplData['persentase'] = 0;
-            }
-        }
-
-        
-    foreach ($capaianCpl as $kodeCpl => &$cplData) {
+        // Hitung persentase dan predikat
+        foreach ($capaianCpl as &$cplData) {
         $nilaiMax = $cplData['total_skor_maksimal'];
 
         if ($nilaiMax > 0) {
             $persentase = ($cplData['total_nilai'] / $nilaiMax) * 100;
             $cplData['persentase'] = number_format($persentase, 2);
 
-            // Tentukan predikat
-            if ($persentase >= 85) {
+                if ($persentase >= 85) {
                 $cplData['predikat'] = 'Sangat Kompeten (Exemplary)';
             } elseif ($persentase >= 75) {
                 $cplData['predikat'] = 'Kompeten (Competent)';
@@ -213,13 +201,10 @@ class KetercapaianController extends Controller
 
     ksort($capaianCpl);
 
-    $capaianCpl = array_map(function ($cpl) {
-        $cpl['kode_cpl'] = 'CPL-' . str_pad(explode('-', $cpl['kode_cpl'])[1], 2, '0', STR_PAD_LEFT);
-        return $cpl;
-    }, $capaianCpl);
-
-    return $capaianCpl;
+        return $capaianCpl;
 }
+
+
     private function getGrade($total)
     {
         if ($total >= 85) {
