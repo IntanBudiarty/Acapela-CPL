@@ -1,150 +1,136 @@
-@extends('layouts.backend')
+<?php
 
-@section('title')
-    Nilai Mahasiswa
-@endsection
+namespace App\Http\Controllers;
 
-@section('content')
-<div class="card">
-    <div class="card-body">
-        <div class="content">
-                <div class="container">
-                    <div class="bg-body-light">
-                        <div class="content">
-                            <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Nilai Mahasiswa</h1>
-                        </div>
-                    </div>
-                <div class="block block-rounded block-fx-shadow">
-                    <div class="block-header block-header-default">
-                        <h3 class="block-title">Pilih Angkatan</h3>
-                    </div>
-                    <div class="block-content">
-                        <form method="GET" action="{{ route('nilai.show', $mataKuliah->id) }}">
-                            <label for="angkatan">Pilih Angkatan:</label>
-                            <select name="angkatan" id="angkatan" class="form-control mb-4" onchange="this.form.submit()">
-                                @foreach ($angkatanList as $angkatan)
-                                    <option value="{{ $angkatan }}" {{ $angkatan == $selectedAngkatan ? 'selected' : '' }}>
-                                        {{ $angkatan }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form>
-                    </div>
-                </div>
-            
-                <div class="block block-rounded block-fx-shadow mt-3">
-                    <div class="block-header block-header-default">
-                        <h3 class="block-title">Informasi Mata Kuliah</h3>
-                    </div>
-                    <div class="block-content">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td><strong>Kode MK:</strong></td>
-                                <td>{{ $mataKuliah->kode }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Nama MK:</strong></td>
-                                <td>{{ $mataKuliah->nama }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            
-                <div class="block block-rounded block-fx-shadow mt-3">
-                    <div class="block-header block-header-default">
-                        <h3 class="block-title">Nilai Mahasiswa</h3>
-                    </div>
-                    <div class="block-content">
-                        <form action="{{ route('nilai.updateNilai') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-            
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>NIM</th>
-                                        <th>Nama</th>
-                                        <th>CPL</th>
-                                        <th>CPMK</th>
-                                        <th>Skor Maks</th>
-                                        <th>Nilai</th>
-                                        <th>Total</th>
-                                        <th>Nilai Huruf</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($mahasiswaList as $index => $mahasiswa)
-                                        @php $totalNilai = 0; @endphp
-                                        @foreach ($rumusanAkhirMkGrouped as $rumusans)
-                                            @foreach ($rumusans as $rumusan)
-                                                @php
-                                                    $existingNilai = isset($nilaiMahasiswa[$mahasiswa->id][$rumusan->id]) 
-                                                        ? $nilaiMahasiswa[$mahasiswa->id][$rumusan->id]->nilai 
-                                                        : 0;
-                                                    $totalNilai += $existingNilai;
-                                                @endphp
-                                                <tr>
-                                                    @if ($loop->first)
-                                                        <td rowspan="{{ count($rumusans) }}">{{ $index + 1 }}</td>
-                                                        <td rowspan="{{ count($rumusans) }}">{{ $mahasiswa->nim }}</td>
-                                                        <td rowspan="{{ count($rumusans) }}">{{ $mahasiswa->nama }}</td>
-                                                    @endif
-                                                    <td>{{ $rumusan->kd_cpl }}</td>
-                                                    <td>{{ $rumusan->kd_cpmk }}</td>
-                                                    <td>{{ $rumusan->skor_maksimal }}</td>
-                                                    <td>
-                                                        <input 
-                                                            type="number" 
-                                                            class="form-control nilai-input" 
-                                                            name="nilai[{{ $mahasiswa->id }}][{{ $rumusan->id }}]" 
-                                                            value="{{ old('nilai.' . $mahasiswa->id . '.' . $rumusan->id, $existingNilai) }}" 
-                                                            data-nim="{{ $mahasiswa->nim }}" 
-                                                            data-total-id="total-{{ $mahasiswa->nim }}"
-                                                            max="{{ $rumusan->skor_maksimal }}"
-                                                            required>
-                                                    </td>
-                                                    @if ($loop->last)
-                                                        <td id="total-{{ $mahasiswa->nim }}">
-                                                            <strong>{{ $totalNilai }}</strong>
-                                                        </td>
-                                                        <td id="akumulasi-{{ $mahasiswa->nim }}">
-                                                            <strong>{{ $mahasiswa->grade ?? 'N/A' }}</strong>
-                                                        </td>
-                                                    @endif
-                                                </tr>
-                                            @endforeach
-                                        @endforeach
-                                    @endforeach
-                                </tbody>
-                            </table>
-            
-                            <div class="d-flex justify-content-between mt-3">
-                                <a href="{{ route('nilai.index') }}" class="btn btn-secondary mb-4">Kembali</a>
-                                <button type="submit" class="btn btn-primary mb-4">Simpan</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+use App\Models\Nilai;
+use App\Models\MataKuliah;
+use App\Models\Mahasiswa;
+use App\Models\RumusanAkhirMk;
+use Illuminate\Http\Request;
+
+class NilaiController extends Controller
+{
+    public function index()
+    {
+        $user = auth()->user();
+        $angkatanList = Mahasiswa::select('angkatan')->distinct()->orderBy('angkatan', 'desc')->pluck('angkatan');
+
+        $selectedAngkatan = $request->angkatan ?? $angkatanList->first();
+        if ($user->status == 'Dosen') {
+            $mataKuliah = MataKuliah::where('dosen_pengampu_1', $user->id)
+                ->orWhere('dosen_pengampu_2', $user->id)
+                ->get();
+        } else {
+            // Jika admin, tampilkan semua mata kuliah
+            $mataKuliah = MataKuliah::all();
+        }
+
+        return view('nilai.index', compact('mataKuliah', 'angkatanList', 'selectedAngkatan'));
+    }
 
 
-@push('scripts')
-<script>
-    document.querySelectorAll('.nilai-input').forEach(input => {
-        input.addEventListener('input', function() {
-            const max = parseFloat(this.getAttribute('max'));
-            const value = parseFloat(this.value);
-            if (value > max) {
-                this.value = max;
+    public function show(Request $request, $mataKuliahId)
+    {
+        $mataKuliah = MataKuliah::findOrFail($mataKuliahId);
+
+        $angkatanList = Mahasiswa::select('angkatan')->distinct()->orderBy('angkatan', 'desc')->pluck('angkatan');
+        $selectedAngkatan = $request->angkatan ?? $angkatanList->first();
+
+        // Filter mahasiswa berdasarkan angkatan
+        $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
+                $query->where('mata_kuliah_id', $mataKuliahId);
+            })
+            ->where('angkatan', $selectedAngkatan)
+            ->get();
+
+        $rumusanAkhirMkGrouped = RumusanAkhirMk::where('mata_kuliah_id', $mataKuliahId)
+            ->get()
+            ->groupBy('kd_cpl');
+
+        $nilaiMahasiswa = [];
+        foreach ($mahasiswaList as $mahasiswa) {
+            $nilaiMahasiswa[$mahasiswa->id] = Nilai::where('mahasiswa_id', $mahasiswa->id)
+                ->where('mata_kuliah_id', $mataKuliahId)
+                ->get()
+                ->keyBy('rumusan_akhir_mk_id');
+        }
+
+        // Menghitung nilai huruf berdasarkan total nilai untuk setiap mahasiswa
+        foreach ($mahasiswaList as $mahasiswa) {
+            $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
+            $mahasiswa->grade = $this->getGrade($totalNilai);  // Tentukan grade berdasarkan total nilai
+        }
+
+        // Menghitung nilai huruf berdasarkan total nilai untuk setiap mahasiswa
+        foreach ($mahasiswaList as $mahasiswa) {
+            $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
+            $mahasiswa->grade = $this->getGrade($totalNilai);  // Tentukan grade berdasarkan total nilai
+        }
+
+        return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa', 'angkatanList', 'selectedAngkatan'));
+    }
+
+
+    public function updateNilai(Request $request)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'nilai' => 'required|array',
+            'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
+        ]);
+
+        $mataKuliahId = $request->mata_kuliah_id;
+
+        foreach ($request->nilai as $mahasiswaId => $rumusans) {
+            $totalNilai = 0;
+        
+            foreach ($rumusans as $rumusanAkhirMkId => $nilai) {
+                $rumusan = \App\Models\RumusanAkhirMk::findOrFail($rumusanAkhirMkId);
+        
+                if ($nilai > $rumusan->skor_maksimal) {
+                    return back()->withErrors(['Nilai tidak boleh melebihi skor maksimal CPMK.'])->withInput();
+                }
+        
+                Nilai::updateOrCreate(
+                    [
+                        'mahasiswa_id' => $mahasiswaId,
+                        'mata_kuliah_id' => $mataKuliahId,
+                        'rumusan_akhir_mk_id' => $rumusanAkhirMkId,
+                    ],
+                    ['nilai' => $nilai]
+                );
+        
+                $totalNilai += $nilai;
             }
-            if (value < 0) {
-                this.value = 0;
-            }
-        });
-    });
-</script>
-@endpush
+        
+            Nilai::where('mahasiswa_id', $mahasiswaId)
+                ->where('mata_kuliah_id', $mataKuliahId)
+                ->update(['total' => $totalNilai]);
+        }        
+
+        return redirect()->route('nilai.index')->with('success', 'Nilai berhasil diperbarui.');
+    }
+
+    private function getGrade($total)
+    {
+        if ($total >= 85) {
+            return 'A';
+        } elseif ($total >= 80) {
+            return 'A-';
+        } elseif ($total >= 75) {
+            return 'B+';
+        } elseif ($total >= 70) {
+            return 'B';
+        } elseif ($total >= 65) {
+            return 'B-';
+        } elseif ($total >= 60) {
+            return 'C+';
+        } elseif ($total >= 55) {
+            return 'C';
+        } elseif ($total >= 45) {
+            return 'D';
+        } else {
+            return 'E';
+        }
+    }
+}
