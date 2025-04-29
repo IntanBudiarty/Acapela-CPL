@@ -37,7 +37,6 @@ class NilaiController extends Controller
         $angkatanList = Mahasiswa::select('angkatan')->distinct()->orderBy('angkatan', 'desc')->pluck('angkatan');
         $selectedAngkatan = $request->angkatan ?? $angkatanList->first();
 
-        // Filter mahasiswa berdasarkan angkatan
         $mahasiswaList = Mahasiswa::whereHas('mataKuliah', function ($query) use ($mataKuliahId) {
             $query->where('mata_kuliah_id', $mataKuliahId);
         })
@@ -54,31 +53,28 @@ class NilaiController extends Controller
                 ->where('mata_kuliah_id', $mataKuliahId)
                 ->get()
                 ->keyBy('rumusan_akhir_mk_id');
-        }
 
-        // Menghitung nilai huruf berdasarkan total nilai untuk setiap mahasiswa
-        foreach ($mahasiswaList as $mahasiswa) {
+            // Hitung total dan grade untuk ditampilkan saja
             $totalNilai = $nilaiMahasiswa[$mahasiswa->id]->sum('nilai');
-            $mahasiswa->grade = $this->getGrade($totalNilai);  // Tentukan grade berdasarkan total nilai
+            $mahasiswa->total_nilai = $totalNilai;
+            $mahasiswa->grade = $this->getGrade($totalNilai);
         }
 
         return view('nilai.show', compact('mataKuliah', 'rumusanAkhirMkGrouped', 'mahasiswaList', 'nilaiMahasiswa', 'angkatanList', 'selectedAngkatan'));
     }
 
 
+
     public function updateNilai(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'nilai' => 'required|array',
             'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
         ]);
 
-        $mataKuliahId = $request->mata_kuliah_id;
+        $mataKuliahId = $validated['mata_kuliah_id'];
 
-        foreach ($request->nilai as $mahasiswaId => $rumusans) {
-            $totalNilai = 0;
-
+        foreach ($validated['nilai'] as $mahasiswaId => $rumusans) {
             foreach ($rumusans as $rumusanAkhirMkId => $nilai) {
                 $rumusan = \App\Models\RumusanAkhirMk::findOrFail($rumusanAkhirMkId);
 
@@ -92,25 +88,16 @@ class NilaiController extends Controller
                         'mata_kuliah_id' => $mataKuliahId,
                         'rumusan_akhir_mk_id' => $rumusanAkhirMkId,
                     ],
-                    ['nilai' => $nilai]
+                    [
+                        'nilai' => $nilai
+                    ]
                 );
-
-                $totalNilai += $nilai;
             }
-
-            // Update total nilai untuk mahasiswa
-            Nilai::where('mahasiswa_id', $mahasiswaId)
-                ->where('mata_kuliah_id', $mataKuliahId)
-                ->update(['total' => $totalNilai]);
-
-            // Update grade berdasarkan total nilai
-            $mahasiswa = Mahasiswa::find($mahasiswaId);
-            $mahasiswa->grade = $this->getGrade($totalNilai);
-            $mahasiswa->save();
         }
 
         return redirect()->route('nilai.index')->with('success', 'Nilai berhasil diperbarui.');
     }
+
 
     private function getGrade($total)
     {
