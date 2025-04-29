@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\RumusanAkhirMkImport;
 use App\Models\MataKuliah;
 use App\Models\RumusanAkhirCpl;
 use App\Models\RumusanAkhirMk;
@@ -189,4 +190,18 @@ class RumusanAkhirMkController extends Controller
             return redirect()->route('rumusanAkhirMk.index')->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
+
+    try {
+        Excel::import(new RumusanAkhirMkImport, $request->file('file'));
+
+        return back()->with('success', 'Data berhasil diimpor!');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+}
 }

@@ -133,6 +133,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('rumusanAkhirMk/{id}/edit', [RumusanAkhirMkController::class, 'edit'])->name('rumusanAkhirMk.edit');
         Route::put('rumusanAkhirMk/{id}', [RumusanAkhirMkController::class, 'update'])->name('rumusanAkhirMk.update');
         Route::delete('rumusanAkhirMk/{id}', [RumusanAkhirMkController::class, 'destroy'])->name('rumusan_akhir_mk.destroy');
+        Route::post('rumusanAkhirMk/import', [RumusanAkhirMkController::class, 'import'])->name('rumusanAkhirMk.import');
 
         // Fetch Mata Kuliah
         Route::get('/fetch-matakuliah', [MataKuliahController::class, 'fetchMataKuliah']);

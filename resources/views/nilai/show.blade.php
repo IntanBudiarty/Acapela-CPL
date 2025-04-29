@@ -90,8 +90,8 @@
                                                         <td rowspan="{{ count($rumusans) }}">{{ $mahasiswa->nim }}</td>
                                                         <td rowspan="{{ count($rumusans) }}">{{ $mahasiswa->nama }}</td>
                                                     @endif
-                                                    <td>{{ $rumusan->kd_cpl }}</td>
-                                                    <td>{{ $rumusan->kd_cpmk }}</td>
+                                                    <td>{{ \App\Models\Cpl::find($rumusan->kd_cpl)->kode_cpl }}</td>
+                                                    <td>{{ \App\Models\Cpmk::find($rumusan->kd_cpmk)->kode_cpmk }}</td>
                                                     <td>{{ $rumusan->skor_maksimal }}</td>
                                                     <td>
                                                         <input 
