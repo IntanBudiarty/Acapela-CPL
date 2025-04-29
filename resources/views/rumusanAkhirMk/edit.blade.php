@@ -13,23 +13,35 @@
     <script src="{{ asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
     <script>
         Dashmix.helpersOnLoad(['jq-select2']);
-        
+
         $(document).ready(function() {
             let selectedCPMK = @json($rumusanAkhirMk->kd_cpmk ? explode(',', $rumusanAkhirMk->kd_cpmk) : []);
+            generateSkorInputs(selectedCPMK);
+
             $('#kd_cpmk').val(selectedCPMK).trigger('change');
 
             $('#kd_cpmk').on('change', function() {
-                let selectedCPMK = $(this).val();
-                let skorInputs = '';
-                selectedCPMK.forEach(function(cpmk) {
-                    skorInputs += `
-                        <div class="form-group">
-                            <label for="skor_maksimal_${cpmk}">Skor Maksimal untuk CPMK ${cpmk}</label>
-                            <input type="number" id="skor_maksimal_${cpmk}" name="skor_maksimal[${cpmk}]" class="form-control" required>
-                        </div>`;
-                });
-                $('#skor_inputs').html(skorInputs);
+                let selected = $(this).val();
+                generateSkorInputs(selected);
             });
+
+            $('form').on('submit', function(){
+                $(this).find('button[type=submit]').prop('disabled', true).text('Menyimpan...');
+            });
+
+            function generateSkorInputs(cpmkList) {
+                let skorInputs = '';
+                if (cpmkList && cpmkList.length > 0) {
+                    cpmkList.forEach(function(cpmk) {
+                        skorInputs += `
+                            <div class="form-group">
+                                <label for="skor_maksimal_${cpmk}">Skor Maksimal untuk CPMK ${cpmk}</label>
+                                <input type="number" id="skor_maksimal_${cpmk}" name="skor_maksimal[${cpmk}]" class="form-control" required>
+                            </div>`;
+                    });
+                }
+                $('#skor_inputs').html(skorInputs);
+            }
         });
     </script>
 @endsection
@@ -71,7 +83,7 @@
 
                 <div class="form-group">
                     <label class="form-label" for="kd_cpl">Kode CPL</label>
-                    <select class="js-select2 form-select" id="kd_cpl" name="kd_cpl[]" class="form-control" multiple required>
+                    <select class="js-select2 form-select" id="kd_cpl" name="kd_cpl[]" multiple required>
                         @foreach ($cpls as $cpl)
                             <option value="{{ $cpl->kode_cpl }}" {{ in_array($cpl->kode_cpl, is_array($rumusanAkhirMk->kd_cpl) ? $rumusanAkhirMk->kd_cpl : explode(',', $rumusanAkhirMk->kd_cpl)) ? 'selected' : '' }}>
                                 {{ $cpl->kode_cpl }}
@@ -82,7 +94,7 @@
 
                 <div class="form-group">
                     <label class="form-label" for="kd_cpmk">Kode CPMK</label>
-                    <select class="js-select2 form-select" id="kd_cpmk" name="kd_cpmk[]" class="form-control" multiple>
+                    <select class="js-select2 form-select" id="kd_cpmk" name="kd_cpmk[]" multiple>
                         @php
                             $selectedCpmks = explode(',', $rumusanAkhirMk->kd_cpmk);
                         @endphp
@@ -93,10 +105,10 @@
                             </option>
                         @endforeach
                     </select>
-                </div>                
+                </div>
 
                 <div id="skor_inputs"></div>
-                
+
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">Simpan</button>
                     <a href="{{ route('rumusanAkhirMk.index') }}" class="btn btn-secondary ms-2">Batal</a>

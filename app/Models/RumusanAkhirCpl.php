@@ -14,7 +14,6 @@ class RumusanAkhirCpl extends Model
         'kd_cpl', 'mata_kuliah_id', 'nama_mk', 'cpmk', 'skor_maksimal', 'total_skor', 'rumusan_akhir_mk_id',
     ];
 
-    // Relasi ke tabel mata_kuliah
     public function mataKuliah()
     {
         return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
@@ -28,6 +27,10 @@ class RumusanAkhirCpl extends Model
     public function Cpmk()
     {
         return $this->belongsTo(Cpmk::class, 'cpmk', 'kode_cpmk');
+    }
+    public function cpl()
+    {
+        return $this->belongsTo(Cpl::class, 'kd_cpl', 'kode_cpl');
     }
 
 }

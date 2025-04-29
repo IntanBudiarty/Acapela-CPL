@@ -39,10 +39,11 @@ class RumusanAkhirMk extends Model
         return $this->belongsToMany(Cpmk::class, 'mata_kuliah_cpmk', 'mata_kuliah_id', 'cpmk_id')
             ->withPivot('kode_cpmk'); // Pastikan pivot kolom ini termasuk
     }
-    public function rumusanAkhirCpl()
+    public function rumusanAkhirCpls()
     {
         return $this->hasMany(RumusanAkhirCpl::class, 'rumusan_akhir_mk_id');
     }
+    
     public function nilais()
     {
         return $this->hasMany(Nilai::class, 'rumusan_akhir_mk_id');

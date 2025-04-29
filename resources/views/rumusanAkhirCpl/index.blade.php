@@ -76,7 +76,7 @@
                         <tr>
                             <td>{{ $no++ }}</td>
                             <!-- Menampilkan Kode CPL -->
-                            <td>{{ \App\Models\Cpl::find($data->kd_cpl)->kode_cpl }}</td>
+                            <td>{{ \App\Models\Cpl::where('kode_cpl', $data->kd_cpl)->first()->kode_cpl ?? 'Data Tidak Tersedia' }}</td>
                             <td>{{ $data->rumusanAkhirMk->mataKuliah->kode ?? 'Data Tidak Tersedia' }}</td>
                             <td>{{ $data->rumusanAkhirMk->mataKuliah->nama ?? 'Data Tidak Tersedia' }}</td>
                             <!-- Menampilkan Kode CPMK -->
