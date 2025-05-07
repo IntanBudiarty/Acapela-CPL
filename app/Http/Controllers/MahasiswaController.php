@@ -74,15 +74,15 @@ class MahasiswaController extends Controller
         // Mendapatkan NIM terakhir dari mahasiswa yang ada pada angkatan yang sama
         $angkatan = $request->input('angkatan');
         $lastMahasiswa = Mahasiswa::where('angkatan', $angkatan)->orderBy('nim', 'desc')->first();
-        
-        // Tentukan NIM baru, jika belum ada mahasiswa dengan angkatan tersebut, mulai dari 1
-        $newNim = $lastMahasiswa ? (int)substr($lastMahasiswa->nim, -4) + 1 : 1;
-        $newNim = str_pad($newNim, 4, '0', STR_PAD_LEFT); // Pastikan NIM selalu 4 digit, seperti 0001, 0002, dll
-        $newNim = $angkatan . $newNim; // Gabungkan angkatan dan NIM
+
+        // // Tentukan NIM baru, jika belum ada mahasiswa dengan angkatan tersebut, mulai dari 1
+        // $newNim = $lastMahasiswa ? (int)substr($lastMahasiswa->nim, -4) + 1 : 1;
+        // $newNim = str_pad($newNim, 4, '0', STR_PAD_LEFT); // Pastikan NIM selalu 4 digit, seperti 0001, 0002, dll
+        // $newNim = $angkatan . $newNim; // Gabungkan angkatan dan NIM
 
         // Simpan data mahasiswa baru
         $mhs = new Mahasiswa();
-        $mhs->nim = $newNim;
+        $mhs->nim = $request->input('nim');
         $mhs->nama = $request->input('nama');
         $mhs->angkatan = $angkatan;
         $mhs->kelas = $request->input('kelas');
