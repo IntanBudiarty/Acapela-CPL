@@ -120,59 +120,59 @@ class RumusanAkhirMkController extends Controller
 
 
 
-    public function update(Request $request, $id)
-{
-    // Validasi inputan form
-    $validatedData = $request->validate([
-        'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
-        'cpl' => 'required|array',
-        'cpl.*.id' => 'required|exists:cpls,id',
-        'cpl.*.cpmk' => 'required|array',
-        'cpl.*.cpmk.*.id' => 'required|exists:cpmks,id',
-        'cpl.*.cpmk.*.skor' => 'required|numeric|min:0',
-    ]);
+    //     public function update(Request $request, $id)
+    // {
+    //     // Validasi inputan form
+    //     $validatedData = $request->validate([
+    //         'mata_kuliah_id' => 'required|exists:mata_kuliahs,id',
+    //         'cpl' => 'required|array',
+    //         'cpl.*.id' => 'required|exists:cpls,id',
+    //         'cpl.*.cpmk' => 'required|array',
+    //         'cpl.*.cpmk.*.id' => 'required|exists:cpmks,id',
+    //         'cpl.*.cpmk.*.skor' => 'required|numeric|min:0',
+    //     ]);
 
-    // Mulai transaksi
-    \DB::beginTransaction();
+    //     // Mulai transaksi
+    //     \DB::beginTransaction();
 
-    try {
-        // Update data utama RumusanAkhirMk
-        $rumusanAkhirMk = RumusanAkhirMk::findOrFail($id);
-        $rumusanAkhirMk->update([
-            'mata_kuliah_id' => $validatedData['mata_kuliah_id'],
-            'skor_maksimal' => $validatedData['skor_maksimal'], // pastikan ada input untuk skor_maksimal
-            'total_skor' => $validatedData['skor_maksimal'],   // atau sesuaikan logika untuk total skor
-        ]);
+    //     try {
+    //         // Update data utama RumusanAkhirMk
+    //         $rumusanAkhirMk = RumusanAkhirMk::findOrFail($id);
+    //         $rumusanAkhirMk->update([
+    //             'mata_kuliah_id' => $validatedData['mata_kuliah_id'],
+    //             'skor_maksimal' => $validatedData['skor_maksimal'], // pastikan ada input untuk skor_maksimal
+    //             'total_skor' => $validatedData['skor_maksimal'],   // atau sesuaikan logika untuk total skor
+    //         ]);
 
-        // Menghapus data relasi di tabel rumusan_akhir_cpl sebelum diupdate
-        RumusanAkhirCpl::where('rumusan_akhir_mk_id', $id)->delete();
+    //         // Menghapus data relasi di tabel rumusan_akhir_cpl sebelum diupdate
+    //         RumusanAkhirCpl::where('rumusan_akhir_mk_id', $id)->delete();
 
-        // Loop untuk menyimpan data CPL dan CPMK terkait
-        foreach ($validatedData['cpl'] as $cplItem) {
-            foreach ($cplItem['cpmk'] as $cpmkItem) {
-                RumusanAkhirCpl::create([
-                    'rumusan_akhir_mk_id' => $rumusanAkhirMk->id,
-                    'kd_cpl' => Cpl::find($cplItem['id'])->kode_cpl,
-                    'mata_kuliah_id' => $validatedData['mata_kuliah_id'],
-                    'nama_mk' => MataKuliah::find($validatedData['mata_kuliah_id'])->nama,
-                    'cpmk' => Cpmk::find($cpmkItem['id'])->kode_cpmk,
-                    'skor_maksimal' => $cpmkItem['skor'],
-                    'total_skor' => $cpmkItem['skor'],
-                ]);
-            }
-        }
+    //         // Loop untuk menyimpan data CPL dan CPMK terkait
+    //         foreach ($validatedData['cpl'] as $cplItem) {
+    //             foreach ($cplItem['cpmk'] as $cpmkItem) {
+    //                 RumusanAkhirCpl::create([
+    //                     'rumusan_akhir_mk_id' => $rumusanAkhirMk->id,
+    //                     'kd_cpl' => Cpl::find($cplItem['id'])->kode_cpl,
+    //                     'mata_kuliah_id' => $validatedData['mata_kuliah_id'],
+    //                     'nama_mk' => MataKuliah::find($validatedData['mata_kuliah_id'])->nama,
+    //                     'cpmk' => Cpmk::find($cpmkItem['id'])->kode_cpmk,
+    //                     'skor_maksimal' => $cpmkItem['skor'],
+    //                     'total_skor' => $cpmkItem['skor'],
+    //                 ]);
+    //             }
+    //         }
 
-        // Commit perubahan jika semua lancar
-        \DB::commit();
+    //         // Commit perubahan jika semua lancar
+    //         \DB::commit();
 
-        // Redirect ke index dengan pesan sukses
-        return redirect()->route('rumusanAkhirMk.index')->with('success', 'Data berhasil diperbarui!');
-        
-    } catch (\Exception $e) {
-        \DB::rollBack(); // Rollback jika ada error
-        return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-    }
-}
+    //         // Redirect ke index dengan pesan sukses
+    //         return redirect()->route('rumusanAkhirMk.index')->with('success', 'Data berhasil diperbarui!');
+
+    //     } catch (\Exception $e) {
+    //         \DB::rollBack(); // Rollback jika ada error
+    //         return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    //     }
+    // }
 
 
     public function destroy($id)

@@ -131,7 +131,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('rumusanAkhirMk/tambah', [RumusanAkhirMkController::class, 'store'])->name('rumusanAkhirMk.store');
         Route::get('rumusanAkhirMk/hapus/{id}', [RumusanAkhirMkController::class, 'hapus']);
         Route::get('rumusanAkhirMk/{id}/edit', [RumusanAkhirMkController::class, 'edit'])->name('rumusanAkhirMk.edit');
-        Route::put('rumusanAkhirMk/{id}', [RumusanAkhirMkController::class, 'update'])->name('rumusanAkhirMk.update');
+        // Route::put('rumusanAkhirMk/{id}', [RumusanAkhirMkController::class, 'update'])->name('rumusanAkhirMk.update');
         Route::delete('rumusanAkhirMk/{id}', [RumusanAkhirMkController::class, 'destroy'])->name('rumusan_akhir_mk.destroy');
         Route::post('rumusanAkhirMk/import', [RumusanAkhirMkController::class, 'import'])->name('rumusanAkhirMk.import');
 
