@@ -134,11 +134,11 @@
 <script>
     function hitungTotalNilai(mahasiswaId) {
         let total = 0;
-        document.querySelectorAll(input[data-mahasiswa='${mahasiswaId}']).forEach(input => {
+        document.querySelectorAll(`input[data-mahasiswa='${mahasiswaId}']`).forEach(input => {
             const nilai = parseFloat(input.value) || 0;
             total += nilai;
         });
-        document.getElementById(total-${mahasiswaId}).textContent = total;
+        document.getElementById(`total-${mahasiswaId}`).textContent = total;
     }
 
     // Update total setiap kali input nilai berubah
