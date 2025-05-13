@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Validator;
-use App\Models\Mahasiswa;
 
+use App\Models\Mahasiswa;
 use App\Models\MataKuliah;
 use Illuminate\Http\Request;
 use App\Imports\MahasiswaImport;
+use Illuminate\Routing\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MahasiswaController extends Controller
@@ -166,11 +167,16 @@ class MahasiswaController extends Controller
         $mahasiswa = Mahasiswa::findOrFail($mahasiswaId);
         $mataKuliah = MataKuliah::findOrFail($mataKuliahId);
 
-        // Menghapus mata kuliah dari KRS mahasiswa
-        $mahasiswa->mataKuliahs()->detach($mataKuliah->id);
+        // Hapus nilai yang terkait dengan mahasiswa dan mata kuliah ini
+        \App\Models\Nilai::where('mahasiswa_id', $mahasiswaId)
+            ->where('mata_kuliah_id', $mataKuliahId)
+            ->delete();
+
+        // Hapus relasi dari tabel pivot
+        $mahasiswa->mataKuliahs()->detach($mataKuliahId);
 
         return redirect()->route('mahasiswa.detail', $mahasiswa->id)
-            ->with('success', 'Mata Kuliah berhasil dihapus!');
+            ->with('success', 'Mata Kuliah dan nilai terkait berhasil dihapus!');
     }
 
     public function showDetail($id)
