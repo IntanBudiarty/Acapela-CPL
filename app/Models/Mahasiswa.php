@@ -47,7 +47,9 @@ class Mahasiswa extends Model
     }
     public function mataKuliahs()
     {
-        return $this->belongsToMany(MataKuliah::class, 'mahasiswa_mata_kuliah', 'mahasiswa_id', 'mata_kuliah_id');
+        return $this->belongsToMany(MataKuliah::class, 'mahasiswa_mata_kuliah', 'mahasiswa_id', 'mata_kuliah_id')
+            ->withPivot('semester')
+            ->withTimestamps();
     }
     public function rumusanAkhirMk()
     {

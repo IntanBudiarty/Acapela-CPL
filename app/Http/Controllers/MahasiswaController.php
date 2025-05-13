@@ -128,47 +128,38 @@ class MahasiswaController extends Controller
 
     public function addMataKuliah(Request $request, $mahasiswaId)
     {
-        $mahasiswa = Mahasiswa::with('mataKuliahs')->findOrFail($mahasiswaId);
-        $mataKuliah = MataKuliah::findOrFail($request->mata_kuliah_id);
+        $mataKuliahId = $request->mata_kuliah_id;
+        $semester = $request->semester;
 
-        // Ambil semua mahasiswa dengan angkatan yang sama
-        $mahasiswaLain = Mahasiswa::with('mataKuliahs')
-            ->where('angkatan', $mahasiswa->angkatan)
-            ->get();
+        $mataKuliah = MataKuliah::findOrFail($mataKuliahId);
+        $mahasiswaKlik = Mahasiswa::findOrFail($mahasiswaId);
 
-        $terdaftar = 0;
-        $tidakTerdaftarKarenaPenuh = 0;
-        $sudahAmbil = 0;
+        // Cek apakah mahasiswa yang mengklik sudah mengambil MK
+        if ($mahasiswaKlik->mataKuliahs()->where('mata_kuliah_id', $mataKuliahId)->exists()) {
+            return back()->with('error', 'Mata kuliah telah diambil oleh mahasiswa ini.');
+        }
+
+        // Tambahkan ke mahasiswa yang mengklik
+        $mahasiswaKlik->mataKuliahs()->attach($mataKuliahId, ['semester' => $semester]);
+
+        // Tambahkan ke mahasiswa lain yang belum ambil
+        $mahasiswaLain = Mahasiswa::where('id', '!=', $mahasiswaId)->get();
+
+        $jumlahDitambahkan = 0;
 
         foreach ($mahasiswaLain as $mhs) {
-            $totalSKS = $mhs->mataKuliahs->sum('sks');
-
-            // Cek kalau matkul sudah diambil, skip
-            if ($mhs->mataKuliahs()->where('mata_kuliah_id', $mataKuliah->id)->exists()) {
-                $sudahAmbil++;
-                continue;
-            }
-
-            // Cek kalau SKS masih bisa ditambah
-            if ($totalSKS + $mataKuliah->sks <= 24) {
-                $mhs->mataKuliahs()->attach($mataKuliah->id);
-                $terdaftar++;
-            } else {
-                $tidakTerdaftarKarenaPenuh++;
+            if (!$mhs->mataKuliahs()->where('mata_kuliah_id', $mataKuliahId)->exists()) {
+                $mhs->mataKuliahs()->attach($mataKuliahId, ['semester' => $semester]);
+                $jumlahDitambahkan++;
             }
         }
 
-        $pesan = "$terdaftar mahasiswa berhasil ditambahkan mata kuliah $mataKuliah->nama.";
-        if ($tidakTerdaftarKarenaPenuh > 0) {
-            $pesan .= " $tidakTerdaftarKarenaPenuh mahasiswa tidak ditambahkan karena melebihi batas SKS.";
-        }
-        if ($sudahAmbil > 0) {
-            $pesan .= " $sudahAmbil mahasiswa sudah pernah mengambil mata kuliah ini.";
+        if ($jumlahDitambahkan === 0) {
+            return back()->with('success', 'Mata kuliah telah diambil oleh semua mahasiswa.');
         }
 
-        return redirect()->route('mahasiswa.detail', $mahasiswaId)->with('success', $pesan);
+        return back()->with('success', "Mata kuliah berhasil ditambahkan ke {$jumlahDitambahkan} mahasiswa lain.");
     }
-
 
     public function removeMataKuliah($mahasiswaId, $mataKuliahId)
     {

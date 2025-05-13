@@ -59,52 +59,17 @@ class KetercapaianController extends Controller
             ->get()
             ->groupBy('mata_kuliah_id');
 
-        // Hitung rentang nilai berdasarkan total nilai untuk setiap mata kuliah
         $rentangNilai = Nilai::where('mahasiswa_id', $id)
             ->get()
             ->groupBy('mata_kuliah_id')
             ->map(function ($nilaiItems) {
-                $totalNilai = $nilaiItems->sum('nilai');  // Jumlahkan nilai untuk setiap mata kuliah
+            $totalNilai = $nilaiItems->sum('nilai');
                 return [
                     'total_nilai' => $totalNilai,
-                    'grade' => $this->getGrade($totalNilai), // Tentukan grade berdasarkan total nilai
+                'grade' => $this->getGrade($totalNilai),
                 ];
             });
-            // $capaianCpl = Nilai::with('rumusanAkhirMk.cpl')
-            //     ->where('mahasiswa_id', $id)
-            //     ->get()
-            //     ->flatMap(function ($item) {
-            //         return $item->rumusanAkhirMk->cpl->map(function ($cpl) use ($item) {
-            //             return [
-            //                 'kode_cpl' => $cpl->kode_cpl,
-            //                 'nama_cpl' => $cpl->nama_cpl,
-            //                 'nilai' => $item->nilai,
-            //                 'skor_maksimal' => $item->skor_maksimal
-            //             ];
-            //         });
-            //         return collect();
-            //     })
-            //     ->groupBy('kode_cpl')
-            //     ->map(function ($items, $kodeCpl) {
-            //         $namaCpl = collect($items)->first()['nama_cpl'] ?? 'Tidak Ada';
-            //         $totalNilai = collect($items)->sum('nilai');
-            //         $totalSkorMaksimal = collect($items)->sum('skor_maksimal');
-            
-            //         return [
-            //             'kode_cpl' => $kodeCpl,
-            //             'nama_cpl' => $namaCpl,
-            //             'total_nilai' => $totalNilai,
-            //             'total_skor_maksimal' => $totalSkorMaksimal,
-            //             'persentase' => $totalSkorMaksimal > 0 
-            //                 ? round(($totalNilai / $totalSkorMaksimal) * 100, 2)
-            //                 : 0
-            //         ];
-            //     })
-            //     ->values(); 
-        
 
-
-        // Hitung capaian CPL
         $capaianCpl = $this->calculateCapaianCpl($id);
 
         $semester = request('semester');
@@ -119,16 +84,9 @@ class KetercapaianController extends Controller
         }
 
         $nilai = $nilaiQuery->get();
-
-        // Filter data menjadi per mata kuliah
         $ketercapaian = $nilai->groupBy('mata_kuliah_id');
-
-        // Hitung capaian CPL
-        // $capaianCpl = $this->hitungCapaianCpl($nilai); // <- sesuaikan ini jika perlu
-
         $semesters = MataKuliah::distinct()->pluck('semester');
 
-        // Kirim data ke view
         return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl', 'semesters'));
     }
 

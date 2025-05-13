@@ -1,166 +1,142 @@
+@extends('layouts.backend')
 
-@extends('layouts.backend') 
+@section('content')
+<div class="container">
+    <h2>Detail Mahasiswa</h2>
 
-@section('title')
-    Detail Mahasiswa
-@endsection
-
-@section('content') 
-
-
-    {{-- Judul Halaman --}} 
-    <div class="bg-body-light"> 
-        <div class="content content-full"> 
-            <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center"> 
-                <h1 class="flex-grow-1 fs-3 fw-semibold my-2 my-sm-3">Detail Mahasiswa</h1> 
-                <nav class="flex-shrink-0 my-2 my-sm-0 ms-sm-3" aria-label="breadcrumb"> 
-                    <ol class="breadcrumb"> 
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('mhs') }}">Mahasiswa</a></li> 
-                            <li class="breadcrumb-item active" aria-current="page">Detail</li> 
-                        </ol> 
-                    </nav> 
-                </div> 
-            </div> 
+    <!-- Info Mahasiswa -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>NIM:</strong> {{ $mahasiswa->nim }}</p>
+            <p><strong>Nama:</strong> {{ $mahasiswa->nama }}</p>
+            <p><strong>Angkatan:</strong> {{ $mahasiswa->angkatan }}</p>
+            <p><strong>Kelas:</strong> {{ $mahasiswa->kelas }}</p>
         </div>
+    </div>
 
-    {{-- Informasi Mahasiswa --}}
-    <div class="content">
-        <div class="block block-rounded block-fx-shadow">
-            <div class="block-header block-header-default d-flex justify-content-between align-items-center">
-                <h3 class="block-title mb-0">Informasi Mahasiswa</h3>
-                <button type="button" class="btn btn-sm btn-secondary"
-                        onclick="window.location.href='{{ route('mhs') }}'">
-                    Kembali
+    <!-- Alert -->
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
+    <!-- Dropdown Semester -->
+    <form method="GET" class="mb-3">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <label for="semester" class="col-form-label">Pilih Semester:</label>
+            </div>
+            <div class="col-auto">
+                <select name="semester" id="semester" class="form-select" onchange="this.form.submit()">
+                    @for ($i = 1; $i <= 8; $i++)
+                        <option value="{{ $i }}" {{ request('semester', 1) == $i ? 'selected' : '' }}>Semester {{ $i }}</option>
+                    @endfor
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahMatkulModal">
+                    Tambah Mata Kuliah
                 </button>
             </div>
-            <div class="block-content">
-                <table class="table table-bordered">
+        </div>
+    </form>
+
+    <!-- Daftar Mata Kuliah -->
+    @php
+        $selectedSemester = request('semester', 1);
+        $matkuls = $mahasiswa->mataKuliahs->where('pivot.semester', $selectedSemester);
+    @endphp
+
+    <h5>Daftar Mata Kuliah - Semester {{ $selectedSemester }}</h5>
+
+    @if ($matkuls->isEmpty())
+        <p>Tidak ada mata kuliah di semester ini.</p>
+    @else
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th>SKS</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($matkuls as $mk)
                     <tr>
-                        <td><strong>NIM:</strong></td>
-                        <td>{{ $mahasiswa->nim }}</td>
+                        <td>{{ $mk->kode }}</td>
+                        <td>{{ $mk->nama }}</td>
+                        <td>{{ $mk->sks }}</td>
+                        <td>
+                            <form action="{{ route('mahasiswa.removeMataKuliah', [$mahasiswa->id, $mk->id]) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-danger">Hapus</button>
+                            </form>
+                        </td>
                     </tr>
-                    <tr>
-                        <td><strong>Nama:</strong></td>
-                        <td>{{ $mahasiswa->nama }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Angkatan:</strong></td>
-                        <td>{{ $mahasiswa->angkatan }}</td>
-                    </tr>
-                </table>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
-                {{-- Tampilkan Mata Kuliah yang Diambil --}}
-                <h4 class="mt-4">Mata Kuliah yang Diambil</h4>
-                @if($mahasiswa->mataKuliahs->isEmpty())
-                    <p>Mahasiswa ini belum mengambil mata kuliah.</p>
-                @else
-                <table class="table table-bordered"> 
-                    <thead> 
-                        <tr> 
-                            <th>No</th> 
-                            <th>Kode</th> 
-                            <th>Kelas</th> 
-                            <th>Mata Kuliah</th> 
-                            <th>SKS</th> 
-                            <th>Aksi</th> 
-                        </tr> 
-                    </thead> 
-                    <tbody>
-                        @php $totalSKS = 0; @endphp 
-                        @foreach($mahasiswa->mataKuliahs as $index => $mataKuliah) 
-                            <tr> 
-                                <td>{{ $index + 1 }}</td> 
-                                <td>{{ $mataKuliah->kode }}</td> 
-                                <td>{{ $mataKuliah->kelas }}</td> 
-                                <td>{{ $mataKuliah->nama }}</td> 
-                                <td>{{ $mataKuliah->sks }}</td> 
-                                <td>
-                                     <!-- Form Hapus Mata Kuliah -->
-                                     <form action="{{ route('mahasiswa.removeMataKuliah', ['mahasiswa' => $mahasiswa->id, 'mataKuliah' => $mataKuliah->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus mata kuliah ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash-alt"></i> 
-                                        </button>
-                                    </form>                                   
-
-                                </td>
-                            </tr>
-                            
-                            @php $totalSKS += $mataKuliah->sks; @endphp <!-- Tambahkan SKS setiap iterasi --> 
-                        @endforeach 
-                    </tbody>
-                </table>
-                @if(session('error'))
-    <div class="alert alert-danger mt-4">
-        {{ session('error') }}
-    </div>
-@endif
-
-                <p><strong>Total SKS diambil:</strong> {{ $totalSKS }}</p>
-                @endif
-
-                {{--Form Tambah Mata Kuliah--}}
-                <h5 class="mt-4">Tambah Mata Kuliah</h5>
-                    <!-- Tombol untuk membuka modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahMataKuliahModal">
-                        Tambah Mata Kuliah
-                    </button>
-
-    <div class="modal fade" id="tambahMataKuliahModal" tabindex="-1" aria-labelledby="tambahMataKuliahModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+    <!-- Modal Tambah Mata Kuliah -->
+    <div class="modal fade" id="tambahMatkulModal" tabindex="-1" aria-labelledby="tambahMatkulModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tambahMataKuliahModalLabel">Tambah Mata Kuliah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Tambah Mata Kuliah</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body">
-                   
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
+                    @if($mataKuliahs->isEmpty())
+                        <p>Tidak ada mata kuliah yang tersedia.</p>
+                    @else
+                        <table class="table table-sm table-hover">
                             <thead>
                                 <tr>
-                                    <th>No</th>
                                     <th>Kode</th>
-                                    <th>Nama Mata Kuliah</th>
-                                    <th>Kelas</th>
+                                    <th>Nama</th>
                                     <th>SKS</th>
+                                    <th>Pilih Semester</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($mataKuliahs as $index => $mataKuliah)
-                                    {{-- Cek apakah mata kuliah sudah diambil oleh mahasiswa --}}
-                                    @if(!$mahasiswa->mataKuliahs->contains($mataKuliah->id))
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $mataKuliah->kode }}</td>
-                                            <td>{{ $mataKuliah->nama }}</td>
-                                            <td>{{ $mataKuliah->kelas }}</td>
-                                            <td>{{ $mataKuliah->sks }}</td>
-                                            <td>
-                                                <!-- Tombol Tambah -->
-                                                <form action="{{ route('mahasiswa.addMataKuliah', ['id' => $mahasiswa->id]) }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-                                                    <button type="submit" class="btn btn-outline-primary btn-sm">
-                                                        <i class="fas fa-plus-square"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endif
+                                @foreach($mataKuliahs as $mataKuliah)
+                                    <tr>
+                                        <td>{{ $mataKuliah->kode }}</td>
+                                        <td>{{ $mataKuliah->nama }}</td>
+                                        <td>{{ $mataKuliah->sks }}</td>
+                                        <td>
+                                            <form action="{{ route('mahasiswa.addMataKuliah', ['id' => $mahasiswa->id]) }}" method="POST" class="d-flex">
+                                                @csrf
+                                                <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
+                                                <select name="semester" class="form-select form-select-sm me-2" required>
+                                                    <option disabled selected>Semester</option>
+                                                    @for ($i = 1; $i <= 8; $i++)
+                                                        <option value="{{ $i }}">Semester {{ $i }}</option>
+                                                    @endfor
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-success">Tambah</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            {{-- Tombol Tambah sudah di form atas --}}
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
+                    @endif
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
-
+</div>
 @endsection

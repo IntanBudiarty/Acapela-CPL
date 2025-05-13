@@ -63,7 +63,9 @@ class MataKuliah extends Model
 
     public function mahasiswas()
     {
-        return $this->belongsToMany(Mahasiswa::class, 'mahasiswa_mata_kuliah', 'mata_kuliah_id', 'mahasiswa_id');
+        return $this->belongsToMany(Mahasiswa::class, 'mahasiswa_mata_kuliah', 'mata_kuliah_id', 'mahasiswa_id')
+            ->withPivot('semester')
+            ->withTimestamps();
     }
     public function mataKuliah()
     {
