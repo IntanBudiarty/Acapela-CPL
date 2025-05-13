@@ -28,7 +28,7 @@ Dashboard
 <div class="content">
     <div class="row items-push">
         <div class="col-sm-6 col-xl-4">
-            <a class="block block-rounded block-fx-pop text-center h-80 mb-0" href="{{ route('dosen') }}">
+            <a class="block block-rounded block-fx-pop text-center h-80 mb-0"  @role('admin') href="{{ route('dosen') }}"@endrole>
                 <div class="block-content block-content-full">
                     <div class="item item-circle bg-primary-lighter mx-auto my-3">
                         <i class="fa fa-users text-primary"></i>
@@ -39,7 +39,7 @@ Dashboard
             </a>
         </div>
         <div class="col-sm-6 col-xl-4">
-            <a class="block block-rounded block-fx-pop text-center h-80 mb-0" href="{{ route('mhs') }}">
+           <a class="block block-rounded block-fx-pop text-center h-80 mb-0" @role('admin') href="{{ route('mhs') }}"@endrole>
                 <div class="block-content block-content-full">
                     <div class="item item-circle bg-xinspire-lighter mx-auto my-3">
                         <i class="fa fa-user-graduate text-xinspire-dark"></i>
@@ -50,7 +50,7 @@ Dashboard
             </a>
         </div>
         <div class="col-sm-6 col-xl-4">
-            <a class="block block-rounded block-fx-pop text-center h-80 mb-0" href="{{ route('mk') }}">
+            <a class="block block-rounded block-fx-pop text-center h-80 mb-0" @role('admin') href="{{ route('mk') }}"@endrole>
                 <div class="block-content block-content-full">
                     <div class="item item-circle bg-xsmooth-lighter mx-auto my-3">
                         <i class="fa fa-book-open text-xsmooth"></i>
