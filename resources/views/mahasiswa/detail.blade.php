@@ -37,7 +37,7 @@
             </div>
             <div class="col-auto">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahMatkulModal">
-                    Tambah Mata Kuliah
+                    <i class="fa fa-plus"></i> Tambah Mata Kuliah
                 </button>
             </div>
         </div>
@@ -73,7 +73,7 @@
                             <form action="{{ route('mahasiswa.removeMataKuliah', [$mahasiswa->id, $mk->id]) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-sm btn-danger">Hapus</button>
+                                <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>
@@ -116,7 +116,7 @@
                                         <form action="{{ route('mahasiswa.addMataKuliah', ['id' => $mahasiswa->id]) }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-                                            <button type="submit" class="btn btn-sm btn-success">Tambah</button>
+                                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i></button>
                                         </form>
                                     </td>
                                 </tr>
