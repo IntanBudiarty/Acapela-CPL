@@ -132,6 +132,11 @@ class MahasiswaController extends Controller
         $mataKuliahId = $request->mata_kuliah_id;
         $semester = $request->semester;
 
+        // Cek apakah semester diisi
+        if (empty($semester)) {
+            return back()->with('error', 'Silakan pilih semester terlebih dahulu.');
+        }
+
         $mataKuliah = MataKuliah::findOrFail($mataKuliahId);
         $mahasiswaKlik = Mahasiswa::findOrFail($mahasiswaId);
 
