@@ -33,7 +33,7 @@
                                     <td>{{ $mk->nama }}</td>
                                     <td>
                                         <a href="{{ route('nilai.show', $mk->id) }}" class="btn btn-primary btn-sm">
-                                            Input Nilai
+                                           <i class="fa fa-file"></i> Input Nilai
                                         </a>
                                     </td>
                                 </tr>

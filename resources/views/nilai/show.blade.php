@@ -59,7 +59,7 @@
                         <form action="{{ route('nilai.updateNilai') }}" method="POST">
                             @csrf
                             <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-
+                            <a href="{{ route('nilai.index') }}" class="btn btn-secondary mb-4"><i class="fa fa-turn-left"></i> Kembali</a>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -116,9 +116,8 @@
                                 </tbody>
                             </table>
 
-                            <div class="d-flex justify-content-between mt-3">
-                                <a href="{{ route('nilai.index') }}" class="btn btn-secondary mb-4">Kembali</a>
-                                <button type="submit" class="btn btn-primary mb-4">Simpan</button>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="submit" class="btn btn-outline-primary mb-4"><i class="fa fa-check"></i> Simpan</button>
                             </div>
 
                         </form>
