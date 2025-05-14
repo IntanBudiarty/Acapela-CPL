@@ -130,17 +130,14 @@ class MahasiswaController extends Controller
     public function addMataKuliah(Request $request, $mahasiswaId)
     {
         $mataKuliahId = $request->mata_kuliah_id;
-        $semester = $request->semester;
 
-        // Cek apakah semester diisi
-        if (empty($semester)) {
-            return back()->with('error', 'Silakan pilih semester terlebih dahulu.');
-        }
-
+        // Ambil semester langsung dari mata_kuliah
         $mataKuliah = MataKuliah::findOrFail($mataKuliahId);
+        $semester = $mataKuliah->semester;
+
         $mahasiswaKlik = Mahasiswa::findOrFail($mahasiswaId);
 
-        // Cek apakah mahasiswa yang mengklik sudah mengambil MK
+        // Cek apakah mahasiswa sudah mengambil MK ini
         if ($mahasiswaKlik->mataKuliahs()->where('mata_kuliah_id', $mataKuliahId)->exists()) {
             return back()->with('error', 'Mata kuliah telah diambil oleh mahasiswa ini.');
         }
@@ -148,9 +145,8 @@ class MahasiswaController extends Controller
         // Tambahkan ke mahasiswa yang mengklik
         $mahasiswaKlik->mataKuliahs()->attach($mataKuliahId, ['semester' => $semester]);
 
-        // Tambahkan ke mahasiswa lain yang belum ambil
+        // Tambahkan juga ke mahasiswa lain yang belum ambil MK ini
         $mahasiswaLain = Mahasiswa::where('id', '!=', $mahasiswaId)->get();
-
         $jumlahDitambahkan = 0;
 
         foreach ($mahasiswaLain as $mhs) {
@@ -158,10 +154,6 @@ class MahasiswaController extends Controller
                 $mhs->mataKuliahs()->attach($mataKuliahId, ['semester' => $semester]);
                 $jumlahDitambahkan++;
             }
-        }
-
-        if ($jumlahDitambahkan === 0) {
-            return back()->with('success', 'Mata kuliah telah diambil oleh semua mahasiswa.');
         }
 
         return back()->with('success', "Mata kuliah berhasil ditambahkan ke {$jumlahDitambahkan} mahasiswa lain.");

@@ -83,60 +83,53 @@
     @endif
 
     <!-- Modal Tambah Mata Kuliah -->
-    <div class="modal fade" id="tambahMatkulModal" tabindex="-1" aria-labelledby="tambahMatkulModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Mata Kuliah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    @if($mataKuliahs->isEmpty())
-                        <p>Tidak ada mata kuliah yang tersedia.</p>
-                    @else
-                        <table class="table table-sm table-hover">
-                            <thead>
+  <!-- Modal Tambah Mata Kuliah -->
+<div class="modal fade" id="tambahMatkulModal" tabindex="-1" aria-labelledby="tambahMatkulModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Mata Kuliah</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                @if($mataKuliahs->isEmpty())
+                    <p>Tidak ada mata kuliah yang tersedia.</p>
+                @else
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama</th>
+                                <th>Semester</th>
+                                <th>SKS</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($mataKuliahs as $mataKuliah)
                                 <tr>
-                                    <th>Kode</th>
-                                    <th>Nama</th>
-                                    <th>SKS</th>
-                                    <th>Pilih Semester</th>
-                                    <th>Aksi</th>
+                                    <td>{{ $mataKuliah->kode }}</td>
+                                    <td>{{ $mataKuliah->nama }}</td>
+                                    <td>{{ $mataKuliah->semester }}</td>
+                                    <td>{{ $mataKuliah->sks }}</td>
+                                    <td>
+                                        <form action="{{ route('mahasiswa.addMataKuliah', ['id' => $mahasiswa->id]) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
+                                            <button type="submit" class="btn btn-sm btn-success">Tambah</button>
+                                        </form>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($mataKuliahs as $mataKuliah)
-                                    <tr>
-                                        <td>{{ $mataKuliah->kode }}</td>
-                                        <td>{{ $mataKuliah->nama }}</td>
-                                        <td>{{ $mataKuliah->sks }}</td>
-                                        <td>
-                                            <form action="{{ route('mahasiswa.addMataKuliah', ['id' => $mahasiswa->id]) }}" method="POST" class="d-flex">
-                                                @csrf
-                                                <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-                                                <select name="semester" class="form-select form-select-sm me-2" required>
-                                                    <option disabled selected>Semester</option>
-                                                    @for ($i = 1; $i <= 8; $i++)
-                                                        <option value="{{ $i }}">Semester {{ $i }}</option>
-                                                    @endfor
-                                                </select>
-                                                <button type="submit" class="btn btn-sm btn-success">Tambah</button>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            {{-- Tombol Tambah sudah di form atas --}}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @endif
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

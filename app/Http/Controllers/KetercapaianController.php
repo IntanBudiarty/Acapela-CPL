@@ -53,41 +53,46 @@ class KetercapaianController extends Controller
     public function show($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
-
-        $ketercapaian = Nilai::with(['mataKuliah', 'rumusanAkhirMk.cpl'])
-            ->where('mahasiswa_id', $id)
-            ->get()
-            ->groupBy('mata_kuliah_id');
-
-        $rentangNilai = Nilai::where('mahasiswa_id', $id)
-            ->get()
-            ->groupBy('mata_kuliah_id')
-            ->map(function ($nilaiItems) {
-            $totalNilai = $nilaiItems->sum('nilai');
-                return [
-                    'total_nilai' => $totalNilai,
-                'grade' => $this->getGrade($totalNilai),
-                ];
-            });
-
-        $capaianCpl = $this->calculateCapaianCpl($id);
-
         $semester = request('semester');
 
         $nilaiQuery = Nilai::with(['mataKuliah', 'rumusanAkhirMk'])
             ->where('mahasiswa_id', $id);
 
         if ($semester) {
-            $nilaiQuery->whereHas('mataKuliah', function ($q) use ($semester) {
-                $q->where('semester', $semester);
+            $nilaiQuery->whereIn('mata_kuliah_id', function ($query) use ($id, $semester) {
+                $query->select('mata_kuliah_id')
+                    ->from('mahasiswa_mata_kuliah')
+                    ->where('mahasiswa_id', $id)
+                    ->where('semester', $semester);
             });
         }
 
         $nilai = $nilaiQuery->get();
-        $ketercapaian = $nilai->groupBy('mata_kuliah_id');
-        $semesters = MataKuliah::distinct()->pluck('semester');
 
-        return view('ketercapaian.show', compact('mahasiswa', 'ketercapaian', 'rentangNilai', 'capaianCpl', 'semesters'));
+        $ketercapaian = $nilai->groupBy('mata_kuliah_id');
+
+        $rentangNilai = $nilai->groupBy('mata_kuliah_id')
+            ->map(function ($nilaiItems) {
+            $totalNilai = $nilaiItems->sum('nilai');
+            return [
+                'total_nilai' => $totalNilai,
+                'grade' => $this->getGrade($totalNilai),
+                ];
+            });
+
+        $capaianCpl = $this->calculateCapaianCpl($id); // Bisa ditambah filter semester juga jika diperlukan
+        $semesters = DB::table('mahasiswa_mata_kuliah')
+            ->where('mahasiswa_id', $id)
+            ->distinct()
+            ->pluck('semester');
+
+        return view('ketercapaian.show', compact(
+            'mahasiswa',
+            'ketercapaian',
+            'rentangNilai',
+            'capaianCpl',
+            'semesters'
+        ));
     }
 
     public function calculateCapaianCpl($mahasiswaId)
