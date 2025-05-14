@@ -114,7 +114,7 @@
                                     <td>{{ $mhs->nama }}</td>
                                     <td>{{ $mhs->angkatan }}</td>
                                     <td>
-                                        <a href="{{ route('ketercapaian.show', $mhs->id) }}" class="btn btn-primary btn-sm">Lihat</a>
+                                        <a href="{{ route('ketercapaian.show', $mhs->id) }}" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
                                     </td>
                                 </tr>
                             @empty
