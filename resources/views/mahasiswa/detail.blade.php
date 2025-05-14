@@ -36,7 +36,7 @@
                 </select>
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahMatkulModal">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#tambahMatkulModal">
                     <i class="fa fa-plus"></i> Tambah Mata Kuliah
                 </button>
             </div>
@@ -116,7 +116,7 @@
                                         <form action="{{ route('mahasiswa.addMataKuliah', ['id' => $mahasiswa->id]) }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="mata_kuliah_id" value="{{ $mataKuliah->id }}">
-                                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-outline-primary"><i class="fa fa-plus"></i></button>
                                         </form>
                                     </td>
                                 </tr>
