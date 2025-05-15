@@ -13,31 +13,6 @@ class TahunAjaran extends Model
         'id',
     ];
 
-    public function krs()
-    {
-        return $this->hasMany(KRS::class);
-    }
-
-    public function btp()
-    {
-        return $this->hasMany(Btp::class);
-    }
-
-    public function bobotcpl()
-    {
-        return $this->hasMany(Bobotcpl::class);
-    }
-
-    public function kcpmk()
-    {
-        return $this->hasMany(Kcpmk::class);
-    }
-
-    public function kcpl()
-    {
-        return $this->hasMany(Kcpl::class);
-    }
-
     public function rolesmk()
     {
         return $this->hasMany(Rolesmk::class);

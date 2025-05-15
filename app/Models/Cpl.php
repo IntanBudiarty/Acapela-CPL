@@ -18,18 +18,6 @@ class Cpl extends Model
                     ->withPivot('kode_cpl'); // Menambahkan kolom kode_cpl dari pivot
     }
 
-    // Relasi dengan Bobotcpl
-    public function bobotcpl()
-    {
-        return $this->hasMany(Bobotcpl::class);
-    }
-
-    // Relasi dengan Kcpl
-    public function kcpl()
-    {
-        return $this->hasMany(Kcpl::class);
-    }
-
     // Relasi dengan CPMK
     public function cpmks()
     {
