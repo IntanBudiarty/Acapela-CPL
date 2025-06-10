@@ -7,7 +7,7 @@ use App\Models\Nilai;
 use App\Models\Mahasiswa;
 use App\Models\DosenAdmin;
 use App\Models\MataKuliah;
-use App\Models\Ketercapaian;
+use App\Models\ketercapaian;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
