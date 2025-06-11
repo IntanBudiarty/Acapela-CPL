@@ -352,13 +352,75 @@
     <!-- END Main Container -->
 
     <!-- Footer -->
-    <footer id="page-footer" class="bg-body-light">
-        <div class="content py-0">
-            <div class="row fs-sm">
-                
+   <footer id="page-footer" class="bg-body-light border-top">
+    <div class="content py-4">
+        <div class="row fs-sm justify-content-between align-items-center">
+            <div class="col-sm-6 text-center text-sm-start mb-3 mb-sm-0">
+                <div class="d-flex flex-column flex-sm-row align-items-center">
+                    <strong class="me-2 mb-2 mb-sm-0">© 2025 Sistem CPL</strong>
+                    <span class="d-flex align-items-center">
+                        Dibuat dengan <span class="text-danger mx-1">❤️</span> oleh 
+                        <a href="https://www.linkedin.com/in/intan-budiarty-35bb1a334/" 
+                           target="_blank" 
+                           rel="noopener nofollow"
+                           class="ms-1 fw-medium link-hover">
+                            Intan Budiarty
+                        </a>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-6 text-center text-sm-end">
+                <div class="social-links">
+                    <a href="https://www.instagram.com/intnbdrty_?utm_source=qr" 
+                       target="_blank" 
+                       rel="noopener nofollow"
+                       class="text-muted me-3 transition-scale"
+                       title="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/intan-budiarty-35bb1a334/"
+                       target="_blank"
+                       rel="noopener nofollow"
+                       class="text-muted me-3 transition-scale"
+                       title="LinkedIn">
+                        <i class="fab fa-linkedin fa-lg"></i>
+                    </a>
+                    <a href="intanbudiarty03@gmail.com"
+                       class="text-muted transition-scale"
+                       title="Email">
+                        <i class="fas fa-envelope fa-lg"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
+
+<style>
+    .link-hover {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .link-hover:hover {
+        color: #d63384;
+    }
+    
+    .transition-scale {
+        transition: transform 0.2s ease, color 0.3s ease;
+    }
+    
+    .transition-scale:hover {
+        transform: scale(1.1);
+        color: #d63384 !important;
+    }
+    
+    .social-links a {
+        display: inline-block;
+    }
+</style>
+
     <!-- END Footer -->
 </div>
 <!-- END Page Container -->
