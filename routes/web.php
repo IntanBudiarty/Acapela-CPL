@@ -34,7 +34,6 @@ use App\Http\Controllers\DosenMataKuliahController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/setup-dosen', function() {
 $data = [
         ['username' => 'Ferzha Putra Utama, S.T., M.Eng.', 'nip' => '198906232018031001'],
         ['username' => 'Yusran Panca Putra, M.Kom.', 'nip' => '199607052022031015'],
@@ -50,23 +49,40 @@ $data = [
         ['username' => 'Soni Ayi Purnama, M.Kom.', 'nip' => '199203112022031008'],
     ];
 
-    $insertData = [];
+    $now = now();
 
-    foreach ($data as $dosen) {
-        $insertData[] = [
-            'username'   => $dosen['username'],
-            'nip'        => $dosen['nip'],
-            'password'   => bcrypt($dosen['nip']),
-            'status'     => 'Dosen',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
+    DB::beginTransaction();
+
+    try {
+        foreach ($data as $dosen) {
+            // 1. Simpan ke tabel users
+            $userId = DB::table('users')->insertGetId([
+                'username'   => $dosen['username'],
+                'nip'        => $dosen['nip'],
+                'password'   => bcrypt($dosen['nip']),
+                'status'     => 'Dosen',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            // 2. Simpan ke tabel dosen_admins
+            DB::table('dosen_admins')->insert([
+                'user_id'    => $userId,
+                'nip'        => $dosen['nip'],
+                'nama'       => $dosen['username'],
+                'jabatan'    => 'dosen',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        DB::commit();
+
+        return '✅ Data users & dosen_admins berhasil ditambahkan!';
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return '❌ Gagal insert: ' . $e->getMessage();
     }
-
-    DB::table('users')->insert($insertData);
-
-    return '✅ Data dosen berhasil ditambahkan!';
-})->middleware('auth');
 
 Route::get('/', [AuthController::class, 'showFormLogin']);
 Route::get('login', [AuthController::class, 'showFormLogin'])->name('login');
