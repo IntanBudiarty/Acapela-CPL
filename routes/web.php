@@ -1,28 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PLController;
-use App\Http\Controllers\BtpController;
-use App\Http\Controllers\CPLController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BcplController;
+use App\Http\Controllers\BtpController;
+use App\Http\Controllers\CPLController;
 use App\Http\Controllers\CPMKController;
+use App\Http\Controllers\DosenController;
 use App\Http\Controllers\DpnaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KcplController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\DosenController;
 use App\Http\Controllers\KcpmkController;
-use App\Http\Controllers\NilaiController;
-use App\Http\Controllers\RolesmkController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\MataKuliahController;
+use App\Http\Controllers\PLController;
+use App\Http\Controllers\NilaiController;
+use App\Http\Controllers\RolesmkController;
 use App\Http\Controllers\TahunAjaranController;
-use App\Http\Controllers\KetercapaianController;
-use App\Http\Controllers\RumusaAkhirCplController;
 use App\Http\Controllers\RumusanAkhirMkController;
+use App\Http\Controllers\RumusaAkhirCplController;
 use App\Http\Controllers\DosenMataKuliahController;
+use App\Http\Controllers\KetercapaianController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +33,7 @@ use App\Http\Controllers\DosenMataKuliahController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/setup-dosen', function() {
 $data = [
         ['username' => 'Ferzha Putra Utama, S.T., M.Eng.', 'nip' => '198906232018031001'],
         ['username' => 'Yusran Panca Putra, M.Kom.', 'nip' => '199607052022031015'],
@@ -83,6 +83,7 @@ $data = [
         DB::rollBack();
         return '❌ Gagal insert: ' . $e->getMessage();
     }
+});
 
 Route::get('/', [AuthController::class, 'showFormLogin']);
 Route::get('login', [AuthController::class, 'showFormLogin'])->name('login');
