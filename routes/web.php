@@ -1,30 +1,27 @@
 <?php
 
-use App\Models\Mahasiswa;
-use App\Models\MataKuliah;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PLController;
-use App\Http\Controllers\BtpController;
-use App\Http\Controllers\CPLController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BcplController;
+use App\Http\Controllers\BtpController;
+use App\Http\Controllers\CPLController;
 use App\Http\Controllers\CPMKController;
+use App\Http\Controllers\DosenController;
 use App\Http\Controllers\DpnaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KcplController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\DosenController;
 use App\Http\Controllers\KcpmkController;
-use App\Http\Controllers\NilaiController;
-use App\Http\Controllers\RolesmkController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\MataKuliahController;
+use App\Http\Controllers\PLController;
+use App\Http\Controllers\NilaiController;
+use App\Http\Controllers\RolesmkController;
 use App\Http\Controllers\TahunAjaranController;
-use App\Http\Controllers\KetercapaianController;
-use App\Http\Controllers\RumusaAkhirCplController;
 use App\Http\Controllers\RumusanAkhirMkController;
+use App\Http\Controllers\RumusaAkhirCplController;
 use App\Http\Controllers\DosenMataKuliahController;
+use App\Http\Controllers\KetercapaianController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,40 +33,6 @@ use App\Http\Controllers\DosenMataKuliahController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/setup-mk-2024', function(){
-$mahasiswas = Mahasiswa::where('angkatan', 2024)->get();
-
-    $kodeMataKuliah = ['MK05', 'MK06', 'MK07', 'MK08', 'MK09', 'MK10', 'MK50'];
-    $mataKuliahIds = MataKuliah::whereIn('kode', $kodeMataKuliah)->pluck('id');
-
-    $insertData = [];
-
-    foreach ($mahasiswas as $mahasiswa) {
-        foreach ($mataKuliahIds as $mataKuliahId) {
-            $sudahAda = DB::table('mahasiswa_mata_kuliah')
-                ->where('mahasiswa_id', $mahasiswa->id)
-                ->where('mata_kuliah_id', $mataKuliahId)
-                ->where('semester', 2)
-                ->exists();
-
-            if (!$sudahAda) {
-                $insertData[] = [
-                    'mahasiswa_id'   => $mahasiswa->id,
-                    'mata_kuliah_id' => $mataKuliahId,
-                    'semester'       => 2,
-                    'created_at'     => now(),
-                    'updated_at'     => now(),
-                ];
-            }
-        }
-    }
-
-    if (count($insertData)) {
-        DB::table('mahasiswa_mata_kuliah')->insert($insertData);
-    }
-
-    return "✅ Total data baru yang ditambahkan: " . count($insertData);
-})->middleware('auth');
 
 Route::get('/', [AuthController::class, 'showFormLogin']);
 Route::get('login', [AuthController::class, 'showFormLogin'])->name('login');
