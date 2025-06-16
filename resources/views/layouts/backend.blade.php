@@ -358,7 +358,7 @@
             <div class="col-sm-6 text-center text-sm-start mb-3 mb-sm-0">
                 <div class="d-flex flex-column flex-sm-row align-items-center">
                     <strong class="me-2 mb-2 mb-sm-0">© 2025 Sistem CPL</strong>
-                    <span class="d-flex align-items-center">
+                    {{-- <span class="d-flex align-items-center">
                         Dibuat dengan <span class="text-danger mx-1">❤️</span> oleh 
                         <a href="https://www.linkedin.com/in/intan-budiarty-35bb1a334/" 
                            target="_blank" 
@@ -366,10 +366,10 @@
                            class="ms-1 fw-medium link-hover">
                             Intan Budiarty
                         </a>
-                    </span>
+                    </span> --}}
                 </div>
             </div>
-            <div class="col-sm-6 text-center text-sm-end">
+            {{-- <div class="col-sm-6 text-center text-sm-end">
                 <div class="social-links">
                     <a href="https://www.instagram.com/intnbdrty_?utm_source=qr" 
                        target="_blank" 
@@ -391,7 +391,7 @@
                         <i class="fas fa-envelope fa-lg"></i>
                     </a>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </footer>
