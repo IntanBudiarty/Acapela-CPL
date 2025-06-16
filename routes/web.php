@@ -33,57 +33,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/setup-dosen', function() {
-$data = [
-        ['username' => 'Ferzha Putra Utama, S.T., M.Eng.', 'nip' => '198906232018031001'],
-        ['username' => 'Yusran Panca Putra, M.Kom.', 'nip' => '199607052022031015'],
-        ['username' => 'Willi Novrian, M.Kom.', 'nip' => '1993111120220301013'],
-        ['username' => 'Andang Wijanarko, M.Kom.', 'nip' => '199201312019031010'],
-        ['username' => 'Aan Erlanshari, S.T., M.Eng.', 'nip' => '198112222008011011'],
-        ['username' => 'Yudi Setiawan, S.T., M.Eng.', 'nip' => '198909032015041004'],
-        ['username' => 'Dr. Endina Putri Purwandari, S.T., M.Kom.', 'nip' => '198701272012122001'],
-        ['username' => 'Niska Ramadhani, M.Kom.', 'nip' => '198805052022032006'],
-        ['username' => 'Ir. Tiara Eka Putri, S.T., M.Kom.', 'nip' => '199308192022032013'],
-        ['username' => 'Ir. Nurul Renaningtias, S.T., M.Kom.', 'nip' => '199411232020122021'],
-        ['username' => 'Julia Purnama Sari, S.T., M.Kom.', 'nip' => '199007092019032025'],
-        ['username' => 'Soni Ayi Purnama, M.Kom.', 'nip' => '199203112022031008'],
-    ];
 
-    $now = now();
-
-    DB::beginTransaction();
-
-    try {
-        foreach ($data as $dosen) {
-            // 1. Simpan ke tabel users
-            $userId = DB::table('users')->insertGetId([
-                'username'   => $dosen['username'],
-                'nip'        => $dosen['nip'],
-                'password'   => bcrypt($dosen['nip']),
-                'status'     => 'Dosen',
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
-
-            // 2. Simpan ke tabel dosen_admins
-            DB::table('dosen_admins')->insert([
-                'user_id'    => $userId,
-                'nip'        => $dosen['nip'],
-                'nama'       => $dosen['username'],
-                'jabatan'    => 'dosen',
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
-        }
-
-        DB::commit();
-
-        return '✅ Data users & dosen_admins berhasil ditambahkan!';
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return '❌ Gagal insert: ' . $e->getMessage();
-    }
-});
 
 Route::get('/', [AuthController::class, 'showFormLogin']);
 Route::get('login', [AuthController::class, 'showFormLogin'])->name('login');
