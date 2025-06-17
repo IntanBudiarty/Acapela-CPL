@@ -91,7 +91,7 @@
                             <th style="width: 80px;">No.</th>
                             <th>Kode Mata Kuliah</th>
                             <th>Nama Mata Kuliah</th>
-                            <th>Kelas</th>
+                            {{-- <th>Kelas</th> --}}
                             <th>SKS</th>
                             <th>Semester</th>
                             <th>Dosen Pengampu 1</th>
@@ -105,7 +105,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $adm->kode }}</td>
                                 <td>{{ $adm->nama }}</td>
-                                <td>{{ $adm->kelas }}</td>
+                                {{-- <td>{{ $adm->kelas }}</td> --}}
                                 <td>{{ $adm->sks }}</td>
                                 <td>{{ $adm->semester }}</td>
                                 <td>{{ $adm->dosenPengampu1->nama ?? '-' }}</td>

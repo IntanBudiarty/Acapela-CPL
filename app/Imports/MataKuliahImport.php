@@ -22,7 +22,7 @@ class MataKuliahImport implements ToModel, WithHeadingRow // Implementasikan Wit
         return new MataKuliah([
             'kode' => $row['kode'],  
             'nama' => $row['nama'],  
-            'kelas' => $row['kelas'],  
+            // 'kelas' => $row['kelas'],  
             'sks' => $row['sks'],  
             'semester' => $row['semester'],  
             'dosen_pengampu_1' => $row['dosen_pengampu_1'],  

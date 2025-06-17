@@ -77,11 +77,11 @@
                                     <input type="text" class="form-control" id="nama" name="nama"
                                            placeholder="Masukkan Nama Mata Kuliah..." required>
                                 </div>
-                                <div class="mb-4">
+                                {{-- <div class="mb-4">
                                     <label class="form-label" for="kelas">Kelas</label>
                                     <input type="text" class="form-control" id="kelas" name="kelas"
                                            placeholder="Masukkan Kelas Mata Kuliah...">
-                                </div>
+                                </div> --}}
                                 <div class="mb-4">
                                     <label class="form-label" for="sks">SKS</label>
                                     <input type="number" class="form-control" id="sks" name="sks"

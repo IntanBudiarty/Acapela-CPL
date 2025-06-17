@@ -186,8 +186,9 @@ class MahasiswaController extends Controller
     public function detail($id)
     {
        
-        $mahasiswa = Mahasiswa::with('mataKuliahs')->find($id);
-
+        $mahasiswa = Mahasiswa::with(['mataKuliahs' => function($query) {
+            $query->withPivot('semester');
+        }])->find($id);
         
         if (!$mahasiswa) {
             return redirect()->route('mhs')->with('error', 'Mahasiswa tidak ditemukan');
@@ -250,17 +251,5 @@ class MahasiswaController extends Controller
         }
     }
 
-    // protected function updateNIMAfterImport($angkatan)
-    // {
-    //     // Ambil semua mahasiswa berdasarkan angkatan
-    //     $mahasiswas = Mahasiswa::where('angkatan', $angkatan)->orderBy('id', 'asc')->get();
-
-    //     $nimCounter = 1;
-    //     foreach ($mahasiswas as $mahasiswa) {
-    //         $newNim = $angkatan . str_pad($nimCounter, 4, '0', STR_PAD_LEFT);
-    //         $mahasiswa->nim = $newNim;
-    //         $mahasiswa->save();
-    //         $nimCounter++;
-    //     }
-    // }
+    
 }    

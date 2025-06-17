@@ -46,8 +46,9 @@
     <!-- Daftar Mata Kuliah -->
     @php
         $selectedSemester = request('semester', 1);
-        $matkuls = $mahasiswa->mataKuliahs->where('pivot.semester', $selectedSemester);
+        $matkuls = $mahasiswa->mataKuliahs()->wherePivot('semester', $selectedSemester)->get();
     @endphp
+
 
     <h5>Daftar Mata Kuliah - Semester {{ $selectedSemester }}</h5>
 
