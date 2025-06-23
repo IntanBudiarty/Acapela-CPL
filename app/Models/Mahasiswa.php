@@ -12,6 +12,14 @@ class Mahasiswa extends Model
     protected $table = 'mahasiswas';
 
     protected $fillable = ['nim', 'nama', 'angkatan', 'kelas'];
+     public function mataKuliah()
+    {
+        return $this->belongsToMany(MataKuliah::class, 'mahasiswa_mata_kuliah', 'mahasiswa_id', 'mata_kuliah_id');
+    }
+
+    protected $guarded = [
+        'id',
+    ];
 
     public function mataKuliahs()
     {
